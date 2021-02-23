@@ -1,0 +1,2 @@
+exports.lambdaHandler = async (event) => {
+};
