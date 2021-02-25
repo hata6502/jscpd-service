@@ -1,13 +1,32 @@
 {
-  "name": "lambda-docker-example",
+  "name": "jscpd-service",
   "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-enqueue": "tsc && docker build -f enqueue.Dockerfile -t jscpd-service-enqueue .",
+    "build-generate-sitemap": "tsc && docker build -f generate-sitemap.Dockerfile -t jscpd-service-generate-sitemap .",
+    "build-report": "tsc && docker build -f report.Dockerfile -t jscpd-service-report .",
+    "enqueue": "docker run -it -p 9001:8080 --env-file .env --rm jscpd-service-enqueue",
+    "fix": "prettier --write .",
+    "generate-sitemap": "docker run -it -p 9002:8080 --env-file .env --rm jscpd-service-generate-sitemap",
+    "invoke-enqueue": "curl -XPOST 'http://localhost:9001/2015-03-31/functions/function/invocations'",
+    "invoke-generate-sitemap": "curl -XPOST 'http://localhost:9002/2015-03-31/functions/function/invocations'",
+    "invoke-report": "curl -XPOST 'http://localhost:9000/2015-03-31/functions/function/invocations'",
+    "report": "docker run -it -p 9000:8080 --env-file .env --rm jscpd-service-report",
+    "test": "prettier --check . && tsc --noEmit"
   },
-  "author": "",
-  "license": "MIT",
   "dependencies": {
+    "@aws/dynamodb-query-iterator": "^0.7.1",
+    "@octokit/rest": "^18.3.0",
+    "aws-cli-js": "^2.1.0",
+    "aws-sdk": "^2.853.0",
+    "jscpd": "^3.3.24",
+    "simple-git": "^2.35.2"
+  },
+  "devDependencies": {
+    "@types/is-git-url": "^1.0.0",
+    "@types/node": "^14.14.31",
+    "prettier": "^2.2.1",
+    "typescript": "^4.2.2"
   }
 }
