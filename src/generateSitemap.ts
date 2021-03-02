@@ -62,7 +62,7 @@ const lambdaHandler = async () => {
 
               return `
                 <li>
-                  <a href="/reports/${repository["name"].S}/html/index.html">
+                  <a href="/reports/${repository["name"].S}/index.html">
                     ${gitHubRepositoryName}#${repository["revision"].S}
                   </a>
                   &nbsp;
