@@ -1,0 +1,360 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: ""
+
+Parameters:
+  CloudFrontDistributionAcmCertificateArn:
+    Type: String
+  CloudFrontDistributionAlias:
+    Type: String
+  DynamoDBRepositoriesTableName:
+    Type: String
+  LambdaEnqueueFunctionName:
+    Type: String
+  LambdaEnqueueFunctionImageUri:
+    Type: String
+  LambdaGenerateSitemapFunctionName:
+    Type: String
+  LambdaGenerateSitemapFunctionImageUri:
+    Type: String
+  LambdaReportFunctionName:
+    Type: String
+  LambdaReportFunctionImageUri:
+    Type: String
+  S3DefaultBucketName:
+    Type: String
+  S3ReportsBucketName:
+    Type: String
+  SQSQueueName:
+    Type: String
+  SQSDeadLettersQueueName:
+    Type: String
+
+Resources:
+  CloudFrontDefaultCloudFrontOriginAccessIdentity:
+    Type: "AWS::CloudFront::CloudFrontOriginAccessIdentity"
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub "access-identity-${S3DefaultBucketName}.s3.amazonaws.com"
+
+  CloudFrontReportsCloudFrontOriginAccessIdentity:
+    Type: "AWS::CloudFront::CloudFrontOriginAccessIdentity"
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub "access-identity-${S3ReportsBucketName}.s3.amazonaws.com"
+
+  CloudFrontDistribution:
+    Type: "AWS::CloudFront::Distribution"
+    Properties:
+      DistributionConfig:
+        Aliases:
+          - !Ref CloudFrontDistributionAlias
+        Origins:
+          - ConnectionAttempts: 3
+            ConnectionTimeout: 10
+            DomainName: !Sub "${S3DefaultBucketName}.s3.amazonaws.com"
+            Id: !Sub "S3-${S3DefaultBucketName}"
+            OriginPath: ""
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontDefaultCloudFrontOriginAccessIdentity}"
+          - ConnectionAttempts: 3
+            ConnectionTimeout: 10
+            DomainName: !Sub "${S3ReportsBucketName}.s3.amazonaws.com"
+            Id: !Sub "S3-${S3ReportsBucketName}"
+            OriginPath: ""
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontReportsCloudFrontOriginAccessIdentity}"
+        OriginGroups:
+          Quantity: 0
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - "HEAD"
+            - "GET"
+          CachedMethods:
+            - "HEAD"
+            - "GET"
+          Compress: true
+          CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6"
+          SmoothStreaming: false
+          TargetOriginId: !Sub "S3-${S3DefaultBucketName}"
+          ViewerProtocolPolicy: "redirect-to-https"
+        CacheBehaviors:
+          - AllowedMethods:
+              - "HEAD"
+              - "GET"
+            Compress: true
+            CachePolicyId: "658327ea-f89d-4fab-a63d-7e88639e58f6"
+            PathPattern: "reports/*"
+            SmoothStreaming: false
+            TargetOriginId: !Sub "S3-${S3ReportsBucketName}"
+            ViewerProtocolPolicy: "redirect-to-https"
+        Comment: ""
+        PriceClass: "PriceClass_All"
+        Enabled: true
+        ViewerCertificate:
+          AcmCertificateArn: !Ref CloudFrontDistributionAcmCertificateArn
+          MinimumProtocolVersion: "TLSv1.2_2019"
+          SslSupportMethod: "sni-only"
+        Restrictions:
+          GeoRestriction:
+            RestrictionType: "none"
+        HttpVersion: "http2"
+        DefaultRootObject: "index.html"
+        IPV6Enabled: true
+
+  DynamoDBRepositoriesTable:
+    Type: "AWS::DynamoDB::Table"
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "name"
+          AttributeType: "S"
+      TableName: !Ref DynamoDBRepositoriesTableName
+      KeySchema:
+        - AttributeName: "name"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  EventsEnqueueScheduleRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: ""
+      ScheduleExpression: "rate(1 hour)"
+      State: "ENABLED"
+      Targets:
+        - Arn: !GetAtt LambdaEnqueueFunction.Arn
+          Id: "LambdaEnqueueFunction"
+
+  EventsGenerateSitemapScheduleRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: ""
+      ScheduleExpression: "rate(1 day)"
+      State: "ENABLED"
+      Targets:
+        - Arn: !GetAtt LambdaGenerateSitemapFunction.Arn
+          Id: "LambdaGenerateSitemapFunction"
+
+  IAMEnqueueManagedPolicy:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      Path: "/service-role/"
+      PolicyDocument: !Sub |
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Action": "logs:CreateLogGroup",
+                    "Resource": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+                },
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "logs:CreateLogStream",
+                        "logs:PutLogEvents"
+                    ],
+                    "Resource": [
+                        "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaEnqueueFunctionName}:*"
+                    ]
+                }
+            ]
+        }
+
+  IAMGenerateSitemapManagedPolicy:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      Path: "/service-role/"
+      PolicyDocument: !Sub |
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Action": "logs:CreateLogGroup",
+                    "Resource": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+                },
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "logs:CreateLogStream",
+                        "logs:PutLogEvents"
+                    ],
+                    "Resource": [
+                        "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaGenerateSitemapFunctionName}:*"
+                    ]
+                }
+            ]
+        }
+
+  IAMReportManagedPolicy:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      Path: "/service-role/"
+      PolicyDocument: !Sub |
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Action": "logs:CreateLogGroup",
+                    "Resource": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+                },
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "logs:CreateLogStream",
+                        "logs:PutLogEvents"
+                    ],
+                    "Resource": [
+                        "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaReportFunctionName}:*"
+                    ]
+                }
+            ]
+        }
+
+  IAMEnqueueRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/service-role/"
+      AssumeRolePolicyDocument: '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Action":"sts:AssumeRole"}]}'
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - !Ref IAMEnqueueManagedPolicy
+        - "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
+
+  IAMGenerateSitemapRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/service-role/"
+      AssumeRolePolicyDocument: '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Action":"sts:AssumeRole"}]}'
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - !Ref IAMGenerateSitemapManagedPolicy
+        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+        - "arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess"
+
+  IAMReportRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Path: "/service-role/"
+      AssumeRolePolicyDocument: '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Action":"sts:AssumeRole"}]}'
+      MaxSessionDuration: 3600
+      ManagedPolicyArns:
+        - !Ref IAMReportManagedPolicy
+        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+        - "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+        - "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
+
+  LambdaReportEventSourceMapping:
+    Type: "AWS::Lambda::EventSourceMapping"
+    Properties:
+      BatchSize: 1
+      EventSourceArn: !GetAtt SQSQueue.Arn
+      FunctionName: !GetAtt LambdaReportFunction.Arn
+      Enabled: true
+      MaximumBatchingWindowInSeconds: 0
+
+  LambdaEnqueueFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Description: ""
+      Environment:
+        Variables:
+          AWS_SQS_QUEUE_NAME: !Ref SQSQueueName
+      FunctionName: !Ref LambdaEnqueueFunctionName
+      MemorySize: 256
+      Role: !GetAtt IAMEnqueueRole.Arn
+      Timeout: 30
+      TracingConfig:
+        Mode: "PassThrough"
+      PackageType: Image
+      Code:
+        ImageUri: !Ref LambdaEnqueueFunctionImageUri
+
+  LambdaGenerateSitemapFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Description: ""
+      Environment:
+        Variables:
+          AWS_DYNAMODB_REPOSITORIES_TABLE_NAME: !Ref DynamoDBRepositoriesTableName
+          AWS_S3_DEFAULT_BUCKET_NAME: !Ref S3DefaultBucketName
+      FunctionName: !Ref LambdaGenerateSitemapFunctionName
+      MemorySize: 256
+      Role: !GetAtt IAMGenerateSitemapRole.Arn
+      Timeout: 3
+      TracingConfig:
+        Mode: "PassThrough"
+      PackageType: Image
+      Code:
+        ImageUri: !Ref LambdaGenerateSitemapFunctionImageUri
+
+  LambdaReportFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Description: ""
+      Environment:
+        Variables:
+          AWS_S3_REPORT_BUCKET_NAME: !Ref S3ReportsBucketName
+          AWS_DYNAMODB_REPOSITORIES_TABLE_NAME: !Ref DynamoDBRepositoriesTableName
+      FunctionName: !Ref LambdaReportFunctionName
+      MemorySize: 2048
+      Role: !GetAtt IAMReportRole.Arn
+      Timeout: 300
+      TracingConfig:
+        Mode: "PassThrough"
+      PackageType: Image
+      Code:
+        ImageUri: !Ref LambdaReportFunctionImageUri
+
+  LambdaEnqueueSchedulePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref LambdaEnqueueFunctionName
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt EventsEnqueueScheduleRule.Arn
+
+  LambdaGenerateSitemapSchedulePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref LambdaGenerateSitemapFunctionName
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt EventsGenerateSitemapScheduleRule.Arn
+
+  S3DefaultBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Ref S3DefaultBucketName
+
+  S3ReportsBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Ref S3ReportsBucketName
+
+  SQSQueue:
+    Type: "AWS::SQS::Queue"
+    Properties:
+      ContentBasedDeduplication: "true"
+      DelaySeconds: "0"
+      FifoQueue: "true"
+      MaximumMessageSize: "262144"
+      MessageRetentionPeriod: "345600"
+      ReceiveMessageWaitTimeSeconds: "0"
+      VisibilityTimeout: "300"
+      QueueName: !Ref SQSQueueName
+      RedrivePolicy: !Sub '{"deadLetterTargetArn":"${SQSDeadLettersQueue.Arn}","maxReceiveCount":1}'
+
+  SQSDeadLettersQueue:
+    Type: "AWS::SQS::Queue"
+    Properties:
+      ContentBasedDeduplication: "false"
+      DelaySeconds: "0"
+      FifoQueue: "true"
+      MaximumMessageSize: "262144"
+      MessageRetentionPeriod: "345600"
+      ReceiveMessageWaitTimeSeconds: "0"
+      VisibilityTimeout: "30"
+      QueueName: !Ref SQSDeadLettersQueueName
