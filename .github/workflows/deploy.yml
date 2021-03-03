@@ -1,0 +1,62 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      - run: npm install
+      - id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - run: npm run build-enqueue
+      - run: |
+          docker tag "${AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}" "${ECR_REGISTRY}/${AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}"
+          docker push "${ECR_REGISTRY}/${AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}"
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      - run: npm run build-generate-sitemap
+      - run: |
+          docker tag "${AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}" "${ECR_REGISTRY}/${AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}"
+          docker push "${ECR_REGISTRY}/${AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}"
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      - run: npm run build-report
+      - run: |
+          docker tag "${AWS_LAMBDA_REPORT_FUNCTION_NAME}" "${ECR_REGISTRY}/${AWS_LAMBDA_REPORT_FUNCTION_NAME}"
+          docker push "${ECR_REGISTRY}/${AWS_LAMBDA_REPORT_FUNCTION_NAME}"
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      - uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          name: "${AWS_CLOUD_FORMATION_STACK_NAME}"
+          template: template.yml
+          capabilities: CAPABILITY_IAM
+          parameter-overrides: >-
+            CloudFrontDistributionAcmCertificateArn="${AWS_CLOUD_FRONT_DISTRIBUTION_ACM_CERTIFICATE_ARN}",
+            CloudFrontDistributionAlias="${AWS_CLOUD_FRONT_DISTRIBUTION_ALIAS}",
+
+            DynamoDBRepositoriesTableName="${AWS_DYNAMODB_REPOSITORIES_TABLE_NAME}",
+
+            LambdaEnqueueFunctionName="${AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}",
+            LambdaEnqueueFunctionImageUri=$(docker inspect --format='{{index .RepoDigests 0}}' "${AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}"),
+
+            LambdaGenerateSitemapFunctionName="${AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}",
+            LambdaGenerateSitemapFunctionImageUri=$(docker inspect --format='{{index .RepoDigests 0}}' "${AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}"),
+
+            LambdaReportFunctionName="${AWS_LAMBDA_REPORT_FUNCTION_NAME}",
+            LambdaReportFunctionImageUri=$(docker inspect --format='{{index .RepoDigests 0}}' "${AWS_LAMBDA_REPORT_FUNCTION_NAME}"),
+
+            S3DefaultBucketName="${AWS_S3_DEFAULT_BUCKET_NAME}",
+            S3ReportsBucketName="${AWS_S3_REPORT_BUCKET_NAME}",
+
+            SQSQueueName="${AWS_SQS_QUEUE_NAME}",
+            SQSDeadLettersQueueName="${AWS_SQS_DEAD_LETTERS_QUEUE_NAME}"
