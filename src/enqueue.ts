@@ -3,8 +3,6 @@ import { Octokit } from "@octokit/rest";
 
 const batchEnqueueLength = 100;
 
-AWS.config.update({ region: process.env["AWS_REGION"] });
-
 const sqs = new AWS.SQS({ apiVersion: "2012-11-05" });
 const sts = new AWS.STS();
 
@@ -12,7 +10,7 @@ const octokit = new Octokit();
 
 const lambdaHandler = async () => {
   const getCallerIdentityResponse = await sts.getCallerIdentity().promise();
-  const QueueUrl = `https://sqs.${process.env["AWS_REGION"]}.amazonaws.com/${getCallerIdentityResponse.Account}/${process.env["AWS_SQS_QUEUE_NAME"]}`;
+  const QueueUrl = `https://sqs.${process.env["AWS_DEFAULT_REGION"]}.amazonaws.com/${getCallerIdentityResponse.Account}/${process.env["AWS_SQS_QUEUE_NAME"]}`;
 
   const getQueueAttributesResult = await sqs
     .getQueueAttributes({

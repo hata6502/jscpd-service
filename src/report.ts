@@ -6,8 +6,6 @@ import os from "os";
 import path from "path";
 import simpleGit from "simple-git";
 
-AWS.config.update({ region: process.env["AWS_REGION"] });
-
 const dynamoDB = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
 const awsCLI = new AWSCLI.Aws(
