@@ -337,24 +337,24 @@ Resources:
   SQSQueue:
     Type: "AWS::SQS::Queue"
     Properties:
-      ContentBasedDeduplication: "true"
-      DelaySeconds: "0"
-      FifoQueue: "true"
-      MaximumMessageSize: "262144"
-      MessageRetentionPeriod: "345600"
-      ReceiveMessageWaitTimeSeconds: "0"
-      VisibilityTimeout: "300"
+      ContentBasedDeduplication: true
+      DelaySeconds: 0
+      FifoQueue: true
+      MaximumMessageSize: 262144
+      MessageRetentionPeriod: 345600
+      ReceiveMessageWaitTimeSeconds: 0
+      VisibilityTimeout: 300
       QueueName: !Ref SQSQueueName
       RedrivePolicy: !Sub '{"deadLetterTargetArn":"${SQSDeadLettersQueue.Arn}","maxReceiveCount":1}'
 
   SQSDeadLettersQueue:
     Type: "AWS::SQS::Queue"
     Properties:
-      ContentBasedDeduplication: "false"
-      DelaySeconds: "0"
-      FifoQueue: "true"
-      MaximumMessageSize: "262144"
-      MessageRetentionPeriod: "345600"
-      ReceiveMessageWaitTimeSeconds: "0"
-      VisibilityTimeout: "30"
+      ContentBasedDeduplication: false
+      DelaySeconds: 0
+      FifoQueue: true
+      MaximumMessageSize: 262144
+      MessageRetentionPeriod: 345600
+      ReceiveMessageWaitTimeSeconds: 0
+      VisibilityTimeout: 30
       QueueName: !Ref SQSDeadLettersQueueName
