@@ -64,22 +64,22 @@ jobs:
           template: template.yml
           capabilities: CAPABILITY_IAM
           parameter-overrides: >-
-            CloudFrontDistributionAcmCertificateArn="${{secrets.AWS_CLOUD_FRONT_DISTRIBUTION_ACM_CERTIFICATE_ARN}}",
-            CloudFrontDistributionAlias="${{secrets.AWS_CLOUD_FRONT_DISTRIBUTION_ALIAS}}",
+            CloudFrontDistributionAcmCertificateArn=${{secrets.AWS_CLOUD_FRONT_DISTRIBUTION_ACM_CERTIFICATE_ARN}},
+            CloudFrontDistributionAlias=${{secrets.AWS_CLOUD_FRONT_DISTRIBUTION_ALIAS}},
 
-            DynamoDBRepositoriesTableName="${{secrets.AWS_DYNAMODB_REPOSITORIES_TABLE_NAME}}",
+            DynamoDBRepositoriesTableName=${{secrets.AWS_DYNAMODB_REPOSITORIES_TABLE_NAME}},
 
-            LambdaEnqueueFunctionName="${{secrets.AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}}",
-            LambdaEnqueueFunctionImageUri="${{steps.get-lambda-enqueue-function-image-uri.outputs.image_uri}}",
+            LambdaEnqueueFunctionName=${{secrets.AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}},
+            LambdaEnqueueFunctionImageUri=${{steps.get-lambda-enqueue-function-image-uri.outputs.image_uri}},
 
-            LambdaGenerateSitemapFunctionName="${{secrets.AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}}",
-            LambdaGenerateSitemapFunctionImageUri="${{steps.get-lambda-generate-sitemap-function-image-uri.outputs.image_uri}}",
+            LambdaGenerateSitemapFunctionName=${{secrets.AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}},
+            LambdaGenerateSitemapFunctionImageUri=${{steps.get-lambda-generate-sitemap-function-image-uri.outputs.image_uri}},
 
-            LambdaReportFunctionName="${{secrets.AWS_LAMBDA_REPORT_FUNCTION_NAME}}",
-            LambdaReportFunctionImageUri="${{steps.get-lambda-report-function-image-uri.outputs.image_uri}}",
+            LambdaReportFunctionName=${{secrets.AWS_LAMBDA_REPORT_FUNCTION_NAME}},
+            LambdaReportFunctionImageUri=${{steps.get-lambda-report-function-image-uri.outputs.image_uri}},
 
-            S3DefaultBucketName="${{secrets.AWS_S3_DEFAULT_BUCKET_NAME}}",
-            S3ReportsBucketName="${{secrets.AWS_S3_REPORT_BUCKET_NAME}}",
+            S3DefaultBucketName=${{secrets.AWS_S3_DEFAULT_BUCKET_NAME}},
+            S3ReportsBucketName=${{secrets.AWS_S3_REPORT_BUCKET_NAME}},
 
-            SQSQueueName="${{secrets.AWS_SQS_QUEUE_NAME}}",
-            SQSDeadLettersQueueName="${{secrets.AWS_SQS_DEAD_LETTERS_QUEUE_NAME}}"
+            SQSQueueName=${{secrets.AWS_SQS_QUEUE_NAME}},
+            SQSDeadLettersQueueName=${{secrets.AWS_SQS_DEAD_LETTERS_QUEUE_NAME}}
