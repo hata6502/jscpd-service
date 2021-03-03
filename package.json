@@ -3,16 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build-enqueue": "tsc && docker build -f enqueue.Dockerfile -t jscpd-service-enqueue .",
-    "build-generate-sitemap": "tsc && docker build -f generate-sitemap.Dockerfile -t jscpd-service-generate-sitemap .",
-    "build-report": "tsc && docker build -f report.Dockerfile -t jscpd-service-report .",
-    "enqueue": "docker run -it -p 9001:8080 --env-file .env --rm jscpd-service-enqueue",
+    "build-enqueue": "tsc && docker build -f enqueue.Dockerfile -t \"${AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}\" .",
+    "build-generate-sitemap": "tsc && docker build -f generate-sitemap.Dockerfile -t \"${AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}\" .",
+    "build-report": "tsc && docker build -f report.Dockerfile -t \"${AWS_LAMBDA_REPORT_FUNCTION_NAME}\" .",
+    "enqueue": "docker run -it -p 9001:8080 --env-file .env --rm \"${AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}\"",
     "fix": "prettier --write .",
-    "generate-sitemap": "docker run -it -p 9002:8080 --env-file .env --rm jscpd-service-generate-sitemap",
+    "generate-sitemap": "docker run -it -p 9002:8080 --env-file .env --rm \"${AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}\"",
     "invoke-enqueue": "curl -XPOST 'http://localhost:9001/2015-03-31/functions/function/invocations'",
     "invoke-generate-sitemap": "curl -XPOST 'http://localhost:9002/2015-03-31/functions/function/invocations'",
     "invoke-report": "curl -XPOST 'http://localhost:9000/2015-03-31/functions/function/invocations'",
-    "report": "docker run -it -p 9000:8080 --env-file .env --rm jscpd-service-report",
+    "report": "docker run -it -p 9000:8080 --env-file .env --rm \"${AWS_LAMBDA_REPORT_FUNCTION_NAME}\"",
     "test": "prettier --check . && tsc --noEmit"
   },
   "dependencies": {
@@ -20,6 +20,7 @@
     "@octokit/rest": "^18.3.0",
     "aws-cli-js": "^2.1.0",
     "aws-sdk": "^2.853.0",
+    "dotenv-cli": "^4.0.0",
     "jscpd": "^3.3.24",
     "simple-git": "^2.35.2"
   },
