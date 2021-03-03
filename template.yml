@@ -1,5 +1,4 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: ""
 
 Parameters:
   CloudFrontDistributionAcmCertificateArn:
@@ -53,14 +52,12 @@ Resources:
             ConnectionTimeout: 10
             DomainName: !Sub "${S3DefaultBucketName}.s3.amazonaws.com"
             Id: !Sub "S3-${S3DefaultBucketName}"
-            OriginPath: ""
             S3OriginConfig:
               OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontDefaultCloudFrontOriginAccessIdentity}"
           - ConnectionAttempts: 3
             ConnectionTimeout: 10
             DomainName: !Sub "${S3ReportsBucketName}.s3.amazonaws.com"
             Id: !Sub "S3-${S3ReportsBucketName}"
-            OriginPath: ""
             S3OriginConfig:
               OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontReportsCloudFrontOriginAccessIdentity}"
         OriginGroups:
@@ -87,7 +84,6 @@ Resources:
             SmoothStreaming: false
             TargetOriginId: !Sub "S3-${S3ReportsBucketName}"
             ViewerProtocolPolicy: "redirect-to-https"
-        Comment: ""
         PriceClass: "PriceClass_All"
         Enabled: true
         ViewerCertificate:
@@ -118,7 +114,6 @@ Resources:
   EventsEnqueueScheduleRule:
     Type: AWS::Events::Rule
     Properties:
-      Description: ""
       ScheduleExpression: "rate(1 hour)"
       State: "ENABLED"
       Targets:
@@ -128,7 +123,6 @@ Resources:
   EventsGenerateSitemapScheduleRule:
     Type: AWS::Events::Rule
     Properties:
-      Description: ""
       ScheduleExpression: "rate(1 day)"
       State: "ENABLED"
       Targets:
@@ -258,7 +252,6 @@ Resources:
   LambdaEnqueueFunction:
     Type: "AWS::Lambda::Function"
     Properties:
-      Description: ""
       Environment:
         Variables:
           AWS_SQS_QUEUE_NAME: !Ref SQSQueueName
@@ -275,7 +268,6 @@ Resources:
   LambdaGenerateSitemapFunction:
     Type: "AWS::Lambda::Function"
     Properties:
-      Description: ""
       Environment:
         Variables:
           AWS_DYNAMODB_REPOSITORIES_TABLE_NAME: !Ref DynamoDBRepositoriesTableName
@@ -293,7 +285,6 @@ Resources:
   LambdaReportFunction:
     Type: "AWS::Lambda::Function"
     Properties:
-      Description: ""
       Environment:
         Variables:
           AWS_S3_REPORT_BUCKET_NAME: !Ref S3ReportsBucketName
@@ -333,6 +324,36 @@ Resources:
     Type: "AWS::S3::Bucket"
     Properties:
       BucketName: !Ref S3ReportsBucketName
+
+  S3DefaultBucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !Ref S3DefaultBucketName
+      PolicyDocument:
+        Version: "2012-10-17"
+        Id: "PolicyForCloudFrontPrivateContent"
+        Statement:
+          - Sid: "1"
+            Effect: "Allow"
+            Principal:
+              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontDefaultCloudFrontOriginAccessIdentity}"
+            Action: "s3:GetObject"
+            Resource: !Sub "arn:aws:s3:::${S3DefaultBucketName}/*"
+
+  S3ReportsBucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !Ref S3ReportsBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Id: "PolicyForCloudFrontPrivateContent"
+        Statement:
+          - Sid: "1"
+            Effect: "Allow"
+            Principal:
+              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontReportsCloudFrontOriginAccessIdentity}"
+            Action: "s3:GetObject"
+            Resource: !Sub "arn:aws:s3:::${S3ReportsBucket}/*"
 
   SQSQueue:
     Type: "AWS::SQS::Queue"

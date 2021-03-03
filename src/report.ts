@@ -29,56 +29,58 @@ const lambdaHandler = async ({
       gitHubRepositoryFullName,
     }: { gitHubRepositoryFullName: string } = JSON.parse(record.body);
 
-    fs.rmSync(os.tmpdir(), { force: true, recursive: true });
-    fs.mkdirSync(os.tmpdir());
+    const jscpdReportLocalPath = fs.mkdtempSync(
+      path.join(os.tmpdir(), "jscpd-report-")
+    );
 
     const repositoryLocalPath = fs.mkdtempSync(
       path.join(os.tmpdir(), "repository-")
     );
 
-    const jscpdReportLocalPath = fs.mkdtempSync(
-      path.join(os.tmpdir(), "jscpd-report-")
-    );
+    try {
+      const git = simpleGit(repositoryLocalPath);
 
-    const git = simpleGit(repositoryLocalPath);
+      await git.clone(
+        `git://github.com/${gitHubRepositoryFullName}.git`,
+        repositoryLocalPath
+      );
 
-    await git.clone(
-      `git://github.com/${gitHubRepositoryFullName}.git`,
-      repositoryLocalPath
-    );
+      await jscpd([
+        "",
+        "",
+        repositoryLocalPath,
+        "--output",
+        jscpdReportLocalPath,
+        "--reporters",
+        "html",
+        "--silent",
+      ]);
 
-    await jscpd([
-      "",
-      "",
-      repositoryLocalPath,
-      "--output",
-      jscpdReportLocalPath,
-      "--reporters",
-      "html",
-      "--silent",
-    ]);
+      const name = `github/${gitHubRepositoryFullName}`;
+      const revision = await git.revparse(["HEAD"]);
 
-    const name = `github/${gitHubRepositoryFullName}`;
-    const revision = await git.revparse(["HEAD"]);
+      if (!process.env["AWS_DYNAMODB_REPOSITORIES_TABLE_NAME"]) {
+        throw new Error();
+      }
 
-    if (!process.env["AWS_DYNAMODB_REPOSITORIES_TABLE_NAME"]) {
-      throw new Error();
+      await Promise.all([
+        awsCLI.command(
+          `s3 sync ${jscpdReportLocalPath}/html s3://${process.env["AWS_S3_REPORT_BUCKET_NAME"]}/reports/${name} --delete`
+        ),
+        dynamoDB
+          .putItem({
+            TableName: process.env["AWS_DYNAMODB_REPOSITORIES_TABLE_NAME"],
+            Item: {
+              name: { S: name },
+              revision: { S: revision },
+            },
+          })
+          .promise(),
+      ]);
+    } finally {
+      fs.rmSync(jscpdReportLocalPath, { force: true, recursive: true });
+      fs.rmSync(repositoryLocalPath, { force: true, recursive: true });
     }
-
-    await Promise.all([
-      awsCLI.command(
-        `s3 sync ${jscpdReportLocalPath}/html s3://${process.env["AWS_S3_REPORT_BUCKET_NAME"]}/reports/${name} --delete`
-      ),
-      dynamoDB
-        .putItem({
-          TableName: process.env["AWS_DYNAMODB_REPOSITORIES_TABLE_NAME"],
-          Item: {
-            name: { S: name },
-            revision: { S: revision },
-          },
-        })
-        .promise(),
-    ]);
   }
 };
 
