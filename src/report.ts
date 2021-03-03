@@ -42,7 +42,8 @@ const lambdaHandler = async ({
 
       await git.clone(
         `git://github.com/${gitHubRepositoryFullName}.git`,
-        repositoryLocalPath
+        repositoryLocalPath,
+        ["--depth", "1"]
       );
 
       await jscpd([
