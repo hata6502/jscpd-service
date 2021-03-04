@@ -21,7 +21,7 @@
     "aws-cli-js": "^2.1.0",
     "aws-sdk": "^2.853.0",
     "dotenv-cli": "^4.0.0",
-    "jscpd": "^3.3.24",
+    "jscpd": "^3.3.25",
     "simple-git": "^2.35.2"
   },
   "devDependencies": {
