@@ -1,7 +1,7 @@
 FROM amazon/aws-lambda-nodejs:14
 
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json /var/task/
 RUN npm install
-COPY dist ./
+COPY dist /var/task/
 
 CMD ["dist/enqueue.lambdaHandler"]
