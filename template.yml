@@ -99,6 +99,8 @@ Resources:
 
   DynamoDBRepositoriesTable:
     Type: "AWS::DynamoDB::Table"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Properties:
       AttributeDefinitions:
         - AttributeName: "name"
@@ -357,6 +359,8 @@ Resources:
 
   SQSQueue:
     Type: "AWS::SQS::Queue"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Properties:
       ContentBasedDeduplication: true
       DelaySeconds: 0
@@ -370,6 +374,8 @@ Resources:
 
   SQSDeadLettersQueue:
     Type: "AWS::SQS::Queue"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
     Properties:
       ContentBasedDeduplication: false
       DelaySeconds: 0
