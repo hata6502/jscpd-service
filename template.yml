@@ -25,6 +25,8 @@ Parameters:
     Type: String
   SQSQueueName:
     Type: String
+  SQSDeadLettersQueueName:
+    Type: String
 
 Resources:
   CloudFrontDefaultCloudFrontOriginAccessIdentity:
@@ -361,4 +363,12 @@ Resources:
     UpdateReplacePolicy: Retain
     Properties:
       QueueName: !Ref SQSQueueName
+      RedrivePolicy: !Sub '{"deadLetterTargetArn":"${SQSDeadLettersQueue.Arn}","maxReceiveCount":1}'
       VisibilityTimeout: 300
+
+  SQSDeadLettersQueue:
+    Type: "AWS::SQS::Queue"
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      QueueName: !Ref SQSDeadLettersQueueName

@@ -78,4 +78,5 @@ jobs:
             S3DefaultBucketName=${{secrets.AWS_S3_DEFAULT_BUCKET_NAME}},
             S3ReportsBucketName=${{secrets.AWS_S3_REPORT_BUCKET_NAME}},
 
-            SQSQueueName=${{secrets.AWS_SQS_QUEUE_NAME}}
+            SQSQueueName=${{secrets.AWS_SQS_QUEUE_NAME}},
+            SQSDeadLettersQueueName=${{secrets.AWS_SQS_DEAD_LETTERS_QUEUE_NAME}}
