@@ -1,12 +1,11 @@
 import * as AWSCLI from "aws-cli-js";
 import AWS from "aws-sdk";
 import fs from "fs";
+import glob from "glob";
 import { jscpd } from "jscpd";
 import os from "os";
 import path from "path";
 import simpleGit from "simple-git";
-
-const jscpdTimeoutMS = 180000;
 
 const dynamoDB = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
@@ -29,6 +28,17 @@ const lambdaHandler = async ({
       gitHubRepositoryFullName,
     }: { gitHubRepositoryFullName: string } = JSON.parse(record.body);
 
+    const leakedTemporaryPaths = [
+      ...glob.sync(path.join(os.tmpdir(), "jscpd-report-*")),
+      ...glob.sync(path.join(os.tmpdir(), "repository-*")),
+    ];
+
+    await Promise.all(
+      leakedTemporaryPaths.map((path) =>
+        fs.promises.rm(path, { force: true, recursive: true })
+      )
+    );
+
     const jscpdReportLocalPath = fs.mkdtempSync(
       path.join(os.tmpdir(), "jscpd-report-")
     );
@@ -37,56 +47,46 @@ const lambdaHandler = async ({
       path.join(os.tmpdir(), "repository-")
     );
 
-    try {
-      const git = simpleGit(repositoryLocalPath);
+    const git = simpleGit(repositoryLocalPath);
 
-      await git.clone(
-        `git://github.com/${gitHubRepositoryFullName}.git`,
-        repositoryLocalPath,
-        ["--depth", "1"]
-      );
+    await git.clone(
+      `git://github.com/${gitHubRepositoryFullName}.git`,
+      repositoryLocalPath,
+      ["--depth", "1"]
+    );
 
-      await Promise.race([
-        jscpd([
-          "",
-          "",
-          repositoryLocalPath,
-          "--output",
-          jscpdReportLocalPath,
-          "--reporters",
-          "html",
-          "--silent",
-        ]),
-        new Promise((_resolve, reject) =>
-          setTimeout(() => reject(new Error("jscpd timeout.")), jscpdTimeoutMS)
-        ),
-      ]);
+    await jscpd([
+      "",
+      "",
+      repositoryLocalPath,
+      "--output",
+      jscpdReportLocalPath,
+      "--reporters",
+      "html",
+      "--silent",
+    ]);
 
-      const name = `github/${gitHubRepositoryFullName}`;
-      const revision = await git.revparse(["HEAD"]);
+    const name = `github/${gitHubRepositoryFullName}`;
+    const revision = await git.revparse(["HEAD"]);
 
-      if (!process.env["AWS_DYNAMODB_REPOSITORIES_TABLE_NAME"]) {
-        throw new Error();
-      }
-
-      await Promise.all([
-        awsCLI.command(
-          `s3 sync ${jscpdReportLocalPath}/html s3://${process.env["AWS_S3_REPORT_BUCKET_NAME"]}/reports/${name} --delete`
-        ),
-        dynamoDB
-          .putItem({
-            TableName: process.env["AWS_DYNAMODB_REPOSITORIES_TABLE_NAME"],
-            Item: {
-              name: { S: name },
-              revision: { S: revision },
-            },
-          })
-          .promise(),
-      ]);
-    } finally {
-      fs.rmSync(jscpdReportLocalPath, { force: true, recursive: true });
-      fs.rmSync(repositoryLocalPath, { force: true, recursive: true });
+    if (!process.env["AWS_DYNAMODB_REPOSITORIES_TABLE_NAME"]) {
+      throw new Error();
     }
+
+    await Promise.all([
+      awsCLI.command(
+        `s3 sync ${jscpdReportLocalPath}/html s3://${process.env["AWS_S3_REPORT_BUCKET_NAME"]}/reports/${name} --delete`
+      ),
+      dynamoDB
+        .putItem({
+          TableName: process.env["AWS_DYNAMODB_REPOSITORIES_TABLE_NAME"],
+          Item: {
+            name: { S: name },
+            revision: { S: revision },
+          },
+        })
+        .promise(),
+    ]);
   }
 };
 
