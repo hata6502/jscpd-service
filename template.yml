@@ -362,7 +362,6 @@ Resources:
     Properties:
       ContentBasedDeduplication: true
       DelaySeconds: 0
-      FifoQueue: true
       MaximumMessageSize: 262144
       MessageRetentionPeriod: 345600
       ReceiveMessageWaitTimeSeconds: 0
