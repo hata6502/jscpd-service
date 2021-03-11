@@ -6,6 +6,8 @@ import os from "os";
 import path from "path";
 import simpleGit from "simple-git";
 
+const jscpdTimeoutMS = 180000;
+
 const dynamoDB = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
 const awsCLI = new AWSCLI.Aws(
@@ -44,15 +46,20 @@ const lambdaHandler = async ({
         ["--depth", "1"]
       );
 
-      await jscpd([
-        "",
-        "",
-        repositoryLocalPath,
-        "--output",
-        jscpdReportLocalPath,
-        "--reporters",
-        "html",
-        "--silent",
+      await Promise.race([
+        jscpd([
+          "",
+          "",
+          repositoryLocalPath,
+          "--output",
+          jscpdReportLocalPath,
+          "--reporters",
+          "html",
+          "--silent",
+        ]),
+        new Promise((_resolve, reject) =>
+          setTimeout(() => reject(new Error("jscpd timeout.")), jscpdTimeoutMS)
+        ),
       ]);
 
       const name = `github/${gitHubRepositoryFullName}`;
