@@ -59,7 +59,6 @@ const lambdaHandler = async () => {
           MessageBody: JSON.stringify({
             gitHubRepositoryFullName: item.full_name,
           }),
-          MessageGroupId: "jscpd-service",
         })
         .promise()
     )

@@ -360,10 +360,5 @@ Resources:
     DeletionPolicy: Retain
     UpdateReplacePolicy: Retain
     Properties:
-      ContentBasedDeduplication: true
-      DelaySeconds: 0
-      MaximumMessageSize: 262144
-      MessageRetentionPeriod: 345600
-      ReceiveMessageWaitTimeSeconds: 0
-      VisibilityTimeout: 300
       QueueName: !Ref SQSQueueName
+      VisibilityTimeout: 300
