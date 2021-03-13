@@ -1,7 +1,7 @@
 import AWS from "aws-sdk";
 import { Octokit } from "@octokit/rest";
 
-const batchEnqueueLength = 100;
+const batchEnqueueLength = 30;
 
 const sqs = new AWS.SQS({ apiVersion: "2012-11-05" });
 const sts = new AWS.STS();

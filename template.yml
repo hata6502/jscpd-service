@@ -116,7 +116,7 @@ Resources:
   EventsEnqueueScheduleRule:
     Type: AWS::Events::Rule
     Properties:
-      ScheduleExpression: "rate(15 minutes)"
+      ScheduleExpression: "rate(20 minutes)"
       State: "ENABLED"
       Targets:
         - Arn: !GetAtt LambdaEnqueueFunction.Arn
