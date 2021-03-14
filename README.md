@@ -1,19 +1,41 @@
 # jscpd-service
 
+## Set up environment variables
+
+```bash
+cp .env.example .env
+```
+
+Then edit `.env`.
+
+## Create AWS ECR repositories
+
+```bash
+dotenv -- bash -c 'aws ecr create-repository --repository-name "${AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}" --image-scanning-configuration scanOnPush=true'
+dotenv -- bash -c 'aws ecr create-repository --repository-name "${AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}" --image-scanning-configuration scanOnPush=true'
+dotenv -- bash -c 'aws ecr create-repository --repository-name "${AWS_LAMBDA_REPORT_FUNCTION_NAME}" --image-scanning-configuration scanOnPush=true'
+```
+
+## Deploy AWS development infrastructure
+
+```bash
+act -j deploy
+```
+
 ## Build AWS Lambda container image
 
 ```bash
-npx dotenv -- npm run build-enqueue
-npx dotenv -- npm run build-generate-sitemap
-npx dotenv -- npm run build-report
+dotenv -- npm run build-enqueue
+dotenv -- npm run build-generate-sitemap
+dotenv -- npm run build-report
 ```
 
 ## Run AWS Lambda container image
 
 ```bash
-npx dotenv -- npm run enqueue
-npx dotenv -- npm run generate-sitemap
-npx dotenv -- npm run report
+dotenv -- npm run enqueue
+dotenv -- npm run generate-sitemap
+dotenv -- npm run report
 ```
 
 ## Invoke AWS Lambda function

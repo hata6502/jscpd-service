@@ -62,7 +62,7 @@ const lambdaHandler = async ({
       "--output",
       jscpdReportLocalPath,
       "--reporters",
-      "html",
+      "json",
       "--silent",
     ]);
 
