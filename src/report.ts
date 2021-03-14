@@ -75,7 +75,7 @@ const lambdaHandler = async ({
 
     await Promise.all([
       awsCLI.command(
-        `s3 sync ${jscpdReportLocalPath}/html s3://${process.env["AWS_S3_REPORT_BUCKET_NAME"]}/reports/${name} --delete`
+        `s3 sync ${jscpdReportLocalPath} s3://${process.env["AWS_S3_REPORT_BUCKET_NAME"]}/reports/${name} --delete`
       ),
       dynamoDB
         .putItem({
