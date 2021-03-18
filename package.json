@@ -3,16 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build-enqueue": "tsc && docker build -f enqueue.Dockerfile -t \"${AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}\" .",
-    "build-generate-sitemap": "tsc && docker build -f generate-sitemap.Dockerfile -t \"${AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}\" .",
-    "build-report": "tsc && docker build -f report.Dockerfile -t \"${AWS_LAMBDA_REPORT_FUNCTION_NAME}\" .",
-    "enqueue": "docker run -it -p 9001:8080 --env-file .env --rm \"${AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}\"",
     "fix": "prettier --write .",
-    "generate-sitemap": "docker run -it -p 9002:8080 --env-file .env --rm \"${AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}\"",
-    "invoke-enqueue": "curl -XPOST 'http://localhost:9001/2015-03-31/functions/function/invocations'",
-    "invoke-generate-sitemap": "curl -XPOST 'http://localhost:9002/2015-03-31/functions/function/invocations'",
-    "invoke-report": "curl -XPOST 'http://localhost:9000/2015-03-31/functions/function/invocations'",
-    "report": "docker run -it -p 9000:8080 --env-file .env --rm \"${AWS_LAMBDA_REPORT_FUNCTION_NAME}\"",
+    "invoke:enqueue": "curl -XPOST 'http://localhost:9000/2015-03-31/functions/function/invocations'",
+    "invoke:generate-sitemap": "curl -XPOST 'http://localhost:9001/2015-03-31/functions/function/invocations'",
+    "invoke:report": "curl -XPOST 'http://localhost:9002/2015-03-31/functions/function/invocations'",
     "test": "prettier --check . && tsc --noEmit"
   },
   "dependencies": {

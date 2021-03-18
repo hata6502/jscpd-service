@@ -7,6 +7,9 @@ jobs:
   deploy:
     runs-on: ubuntu-20.04
     steps:
+      - run: curl -L https://github.com/docker/compose/releases/download/1.16.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+      - run: chmod +x /usr/local/bin/docker-compose
+
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
@@ -19,12 +22,16 @@ jobs:
           aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           aws-region: ${{secrets.AWS_DEFAULT_REGION}}
 
+      - run: npx tsc
+      - run: docker-compose build
+        env:
+          AWS_LAMBDA_ENQUEUE_FUNCTION_NAME: ${{secrets.AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}}
+          AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME: ${{secrets.AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}}
+          AWS_LAMBDA_REPORT_FUNCTION_NAME: ${{secrets.AWS_LAMBDA_REPORT_FUNCTION_NAME}}
+
       - id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - run: npm run build-enqueue
-        env:
-          AWS_LAMBDA_ENQUEUE_FUNCTION_NAME: ${{secrets.AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}}
       - run: |
           docker tag "${{secrets.AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}}" "${ECR_REGISTRY}/${{secrets.AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}}"
           docker push "${ECR_REGISTRY}/${{secrets.AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}}"
@@ -33,9 +40,6 @@ jobs:
       - id: get-lambda-enqueue-function-image-uri
         run: echo "::set-output name=image_uri::$(docker inspect --format='{{index .RepoDigests 0}}' "${{secrets.AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}}")"
 
-      - run: npm run build-generate-sitemap
-        env:
-          AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME: ${{secrets.AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}}
       - run: |
           docker tag "${{secrets.AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}}" "${ECR_REGISTRY}/${{secrets.AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}}"
           docker push "${ECR_REGISTRY}/${{secrets.AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}}"
@@ -44,9 +48,6 @@ jobs:
       - id: get-lambda-generate-sitemap-function-image-uri
         run: echo "::set-output name=image_uri::$(docker inspect --format='{{index .RepoDigests 0}}' "${{secrets.AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}}")"
 
-      - run: npm run build-report
-        env:
-          AWS_LAMBDA_REPORT_FUNCTION_NAME: ${{secrets.AWS_LAMBDA_REPORT_FUNCTION_NAME}}
       - run: |
           docker tag "${{secrets.AWS_LAMBDA_REPORT_FUNCTION_NAME}}" "${ECR_REGISTRY}/${{secrets.AWS_LAMBDA_REPORT_FUNCTION_NAME}}"
           docker push "${ECR_REGISTRY}/${{secrets.AWS_LAMBDA_REPORT_FUNCTION_NAME}}"

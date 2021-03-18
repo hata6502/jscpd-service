@@ -22,28 +22,24 @@ dotenv -- bash -c 'aws ecr create-repository --repository-name "${AWS_LAMBDA_REP
 act -j deploy
 ```
 
-## Build AWS Lambda container image
+## Build AWS Lambda container images
 
 ```bash
-dotenv -- npm run build-enqueue
-dotenv -- npm run build-generate-sitemap
-dotenv -- npm run build-report
+npx tsc && docker-compose build
 ```
 
-## Run AWS Lambda container image
+## Launch AWS Lambdas
 
 ```bash
-dotenv -- npm run enqueue
-dotenv -- npm run generate-sitemap
-dotenv -- npm run report
+docker-compose up
 ```
 
 ## Invoke AWS Lambda function
 
 ```bash
-npm run invoke-enqueue -- -d '{}'
-npm run invoke-generate-sitemap -- -d '{}'
-npm run invoke-report -- -d '{"Records": [{"body": "{\"gitHubRepositoryFullName\": \"[user]/[repository]\"}"}]}'
+npm run invoke:enqueue -- -d '{}'
+npm run invoke:generate-sitemap -- -d '{}'
+npm run invoke:report -- -d '{"Records": [{"body": "{\"gitHubRepositoryFullName\": \"[user]/[repository]\"}"}]}'
 ```
 
 ## Format
