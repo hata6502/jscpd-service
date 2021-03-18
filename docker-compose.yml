@@ -1,0 +1,49 @@
+version: "3"
+
+services:
+  enqueue:
+    build:
+      context: .
+      dockerfile: enqueue.Dockerfile
+    environment:
+      - AWS_ACCESS_KEY_ID
+      - AWS_DEFAULT_REGION
+      - AWS_SECRET_ACCESS_KEY
+
+      - AWS_SQS_QUEUE_NAME
+    image: ${AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}
+    ports:
+      - 9000:8080
+    tty: true
+
+  generate-sitemap:
+    build:
+      context: .
+      dockerfile: generate-sitemap.Dockerfile
+    environment:
+      - AWS_ACCESS_KEY_ID
+      - AWS_DEFAULT_REGION
+      - AWS_SECRET_ACCESS_KEY
+
+      - AWS_DYNAMODB_REPOSITORIES_TABLE_NAME
+      - AWS_S3_DEFAULT_BUCKET_NAME
+    image: ${AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}
+    ports:
+      - 9001:8080
+    tty: true
+
+  report:
+    build:
+      context: .
+      dockerfile: report.Dockerfile
+    environment:
+      - AWS_ACCESS_KEY_ID
+      - AWS_DEFAULT_REGION
+      - AWS_SECRET_ACCESS_KEY
+
+      - AWS_DYNAMODB_REPOSITORIES_TABLE_NAME
+      - AWS_S3_REPORT_BUCKET_NAME
+    image: ${AWS_LAMBDA_REPORT_FUNCTION_NAME}
+    ports:
+      - 9002:8080
+    tty: true
