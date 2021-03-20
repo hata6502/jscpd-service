@@ -16,30 +16,10 @@ dotenv -- bash -c 'aws ecr create-repository --repository-name "${AWS_LAMBDA_GEN
 dotenv -- bash -c 'aws ecr create-repository --repository-name "${AWS_LAMBDA_REPORT_FUNCTION_NAME}" --image-scanning-configuration scanOnPush=true'
 ```
 
-## Deploy AWS development infrastructure
+## Deploy AWS infrastructure
 
 ```bash
 act -j deploy
-```
-
-## Build AWS Lambda container images
-
-```bash
-npx tsc && docker-compose build
-```
-
-## Launch AWS Lambdas
-
-```bash
-docker-compose up
-```
-
-## Invoke AWS Lambda function
-
-```bash
-npm run invoke:enqueue -- -d '{}'
-npm run invoke:generate-sitemap -- -d '{}'
-npm run invoke:report -- -d '{"Records": [{"body": "{\"gitHubRepositoryFullName\": \"[user]/[repository]\"}"}]}'
 ```
 
 ## Format
@@ -57,5 +37,5 @@ act -j lint
 ## Run tests
 
 ```bash
-npm test
+act -j test
 ```

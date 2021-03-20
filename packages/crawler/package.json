@@ -1,0 +1,26 @@
+{
+  "name": "crawler",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "invoke:enqueue": "curl -XPOST 'http://localhost:9000/2015-03-31/functions/function/invocations'",
+    "invoke:generate-sitemap": "curl -XPOST 'http://localhost:9001/2015-03-31/functions/function/invocations'",
+    "invoke:report": "curl -XPOST 'http://localhost:9002/2015-03-31/functions/function/invocations'",
+    "test": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aws/dynamodb-query-iterator": "^0.7.1",
+    "@octokit/rest": "^18.3.0",
+    "aws-cli-js": "^2.1.0",
+    "aws-sdk": "^2.853.0",
+    "glob": "^7.1.6",
+    "jscpd": "^3.3.25",
+    "simple-git": "^2.35.2"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.3",
+    "@types/is-git-url": "^1.0.0",
+    "@types/node": "^14.14.31",
+    "typescript": "^4.2.3"
+  }
+}
