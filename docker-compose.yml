@@ -7,7 +7,7 @@ services:
       dockerfile: enqueue.Dockerfile
     environment:
       - AWS_ACCESS_KEY_ID
-      - AWS_DEFAULT_REGION
+      - AWS_REGION
       - AWS_SECRET_ACCESS_KEY
 
       - AWS_SQS_QUEUE_NAME
@@ -22,7 +22,7 @@ services:
       dockerfile: generate-sitemap.Dockerfile
     environment:
       - AWS_ACCESS_KEY_ID
-      - AWS_DEFAULT_REGION
+      - AWS_REGION
       - AWS_SECRET_ACCESS_KEY
 
       - AWS_DYNAMODB_REPOSITORIES_TABLE_NAME
@@ -38,7 +38,7 @@ services:
       dockerfile: report.Dockerfile
     environment:
       - AWS_ACCESS_KEY_ID
-      - AWS_DEFAULT_REGION
+      - AWS_REGION
       - AWS_SECRET_ACCESS_KEY
 
       - AWS_DYNAMODB_REPOSITORIES_TABLE_NAME
