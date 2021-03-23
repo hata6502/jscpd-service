@@ -18,7 +18,11 @@ jobs:
       - run: npm ci
       - run: npm ci
         working-directory: packages/crawler
+      - run: npm ci
+        working-directory: packages/reporter
 
       - run: npm test
       - run: npm test
         working-directory: packages/crawler
+      - run: npm test
+        working-directory: packages/reporter
