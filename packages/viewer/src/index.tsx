@@ -7,20 +7,16 @@ import {
   StylesProvider,
   ThemeProvider,
 } from "@material-ui/core/styles";
-import * as Sentry from "@sentry/browser";
+import * as Sentry from "@sentry/react";
+import { Integrations } from "@sentry/tracing";
 import ReactDOM from "react-dom";
 
 const main = () => {
   if (process.env["NODE_ENV"] === "production") {
     Sentry.init({
-      beforeSend: (event) => {
-        if (event.exception) {
-          Sentry.showReportDialog({ eventId: event.event_id });
-        }
-
-        return event;
-      },
       dsn: process.env["SENTRY_DSN"],
+      integrations: [new Integrations.BrowserTracing()],
+      tracesSampleRate: 1.0,
     });
   }
 
