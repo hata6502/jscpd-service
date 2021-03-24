@@ -16,13 +16,6 @@ jobs:
           node-version: "14"
       - run: npm install -g npm@7
       - run: npm ci
-      - run: npm ci
-        working-directory: packages/crawler
-      - run: npm ci
-        working-directory: packages/viewer
 
       - run: npm test
-      - run: npm test
-        working-directory: packages/crawler
-      - run: npm test
-        working-directory: packages/viewer
+      - run: npm test --workspaces

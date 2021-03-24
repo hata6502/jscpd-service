@@ -10,6 +10,7 @@ import {
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 import ReactDOM from "react-dom";
+import { App } from "./App";
 
 const main = () => {
   if (process.env["NODE_ENV"] === "production") {
@@ -23,10 +24,10 @@ const main = () => {
   const theme = createMuiTheme({
     palette: {
       primary: {
-        main: "#f15d69",
+        main: "#3650fe",
       },
       secondary: {
-        main: "#00a39b",
+        main: "#cb00af",
       },
     },
   });
@@ -36,7 +37,9 @@ const main = () => {
       <CssBaseline />
 
       <StylesProvider injectFirst>
-        <ThemeProvider theme={theme}>TEST</ThemeProvider>
+        <ThemeProvider theme={theme}>
+          <App />
+        </ThemeProvider>
       </StylesProvider>
     </>,
     document.querySelector(".app")

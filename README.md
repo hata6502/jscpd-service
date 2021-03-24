@@ -34,7 +34,7 @@ npm run fix
 act -j lint
 ```
 
-## Run tests
+## Run Tests
 
 ```bash
 act -j test
