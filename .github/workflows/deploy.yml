@@ -14,7 +14,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "14"
-      - run: npm install
+      - run: npm install -g npm@7
+      - run: npm ci
+      - run: npm ci
+        working-directory: packages/crawler
 
       - uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -23,11 +26,13 @@ jobs:
           aws-region: ${{secrets.AWS_REGION}}
 
       - run: npx tsc
+        working-directory: packages/crawler
       - run: docker-compose build
         env:
           AWS_LAMBDA_ENQUEUE_FUNCTION_NAME: ${{secrets.AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}}
           AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME: ${{secrets.AWS_LAMBDA_GENERATE_SITEMAP_FUNCTION_NAME}}
           AWS_LAMBDA_REPORT_FUNCTION_NAME: ${{secrets.AWS_LAMBDA_REPORT_FUNCTION_NAME}}
+        working-directory: packages/crawler
 
       - id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1

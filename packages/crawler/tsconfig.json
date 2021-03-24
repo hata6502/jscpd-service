@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig",
+  "compilerOptions": {
+    "lib": ["ES2020"],
+    "module": "CommonJS",
+    "outDir": "dist",
+    "sourceMap": true,
+    "target": "ES2020"
+  }
+}
