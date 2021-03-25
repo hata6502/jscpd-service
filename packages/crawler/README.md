@@ -1,6 +1,6 @@
 # crawler
 
-## Build AWS Lambda Container Images
+## Build AWS Lambda container images
 
 ```bash
 npx tsc && docker-compose --env-file ../../.env build
@@ -12,7 +12,7 @@ npx tsc && docker-compose --env-file ../../.env build
 docker-compose --env-file ../../.env up
 ```
 
-## Invoke AWS Lambda Function
+## Invoke AWS Lambda function
 
 ```bash
 npm run invoke:enqueue -- -d '{}'
