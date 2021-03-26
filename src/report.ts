@@ -69,6 +69,13 @@ const lambdaHandler = async ({
     const name = `github/${gitHubRepositoryFullName}`;
     const revision = await git.revparse(["HEAD"]);
 
+    let report = require(`${jscpdReportLocalPath}/html/jscpd-report.json`);
+    report.statistics.revision = revision;
+    fs.writeFileSync(
+      `${jscpdReportLocalPath}/html/jscpd-report.json`,
+      JSON.stringify(report, null, "\t")
+    );
+
     if (!process.env["AWS_DYNAMODB_REPOSITORIES_TABLE_NAME"]) {
       throw new Error();
     }
