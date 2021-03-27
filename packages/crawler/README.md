@@ -3,7 +3,7 @@
 ## Build AWS Lambda container images
 
 ```bash
-npx tsc && docker-compose --env-file ../../.env build
+npx webpack && docker-compose --env-file ../../.env build
 ```
 
 ## Launch AWS Lambdas
