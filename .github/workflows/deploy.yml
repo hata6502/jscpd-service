@@ -65,9 +65,6 @@ jobs:
           template: template.yml
           capabilities: CAPABILITY_IAM
           parameter-overrides: >-
-            CloudFrontDistributionAcmCertificateArn=${{secrets.AWS_CLOUD_FRONT_DISTRIBUTION_ACM_CERTIFICATE_ARN}},
-            CloudFrontDistributionAlias=${{secrets.AWS_CLOUD_FRONT_DISTRIBUTION_ALIAS}},
-
             DynamoDBRepositoriesTableName=${{secrets.AWS_DYNAMODB_REPOSITORIES_TABLE_NAME}},
 
             LambdaEnqueueFunctionName=${{secrets.AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}},
