@@ -2,9 +2,7 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "lib": ["ES2020"],
-    "module": "CommonJS",
-    "outDir": "dist",
-    "sourceMap": true,
+    "module": "ESNext",
     "target": "ES2020"
   }
 }

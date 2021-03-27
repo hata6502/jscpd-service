@@ -23,8 +23,7 @@ jobs:
           aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           aws-region: ${{secrets.AWS_REGION}}
 
-      - run: npx tsc
-        working-directory: packages/crawler
+      - run: npx --workspace=crawler webpack
       - run: docker-compose build
         env:
           AWS_LAMBDA_ENQUEUE_FUNCTION_NAME: ${{secrets.AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}}
