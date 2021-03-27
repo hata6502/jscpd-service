@@ -1,9 +1,10 @@
 import {
-  ArgumentAxis,
-  ValueAxis,
   Chart,
-  LineSeries,
+  Legend,
+  PieSeries,
+  Tooltip
 } from "@devexpress/dx-react-chart-material-ui";
+import { Animation, EventTracker, Palette } from '@devexpress/dx-react-chart';
 import AppBar from "@material-ui/core/AppBar";
 import Box from "@material-ui/core/Box";
 import Container from "@material-ui/core/Container";
@@ -11,15 +12,17 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
+import { useTheme } from '@material-ui/core/styles';
 import GitHubIcon from "@material-ui/icons/GitHub";
 import type { FunctionComponent } from "react";
 
 const App: FunctionComponent = () => {
   const data = [
-    { argument: 1, value: 10 },
-    { argument: 2, value: 20 },
-    { argument: 3, value: 30 },
+    { type: "Unduplicated lines", count: 90 },
+    { type: "Duplicated lines", count: 10 },
   ];
+
+  const theme = useTheme();
 
   return (
     <>
@@ -63,20 +66,24 @@ const App: FunctionComponent = () => {
 
             <Box mb={4}>
               <Chart data={data}>
-                <ArgumentAxis />
-                <ValueAxis />
+                <Animation />
+                <EventTracker />
+                <Legend/>
+                <Palette scheme={[theme.palette.primary.main, theme.palette.secondary.main]} />
+                <Tooltip />
 
-                <LineSeries valueField="value" argumentField="argument" />
+                <PieSeries valueField="count" argumentField="type" />
               </Chart>
             </Box>
 
             <Box mb={4}>
+            <Typography gutterBottom variant="h5">
+                      Statistics
+                    </Typography>
+
               <Paper>
                 <Box pb={2} pt={2}>
                   <Container>
-                    <Typography gutterBottom variant="h5">
-                      Statistics
-                    </Typography>
                     TEST
                   </Container>
                 </Box>
