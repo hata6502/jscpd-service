@@ -142,7 +142,7 @@ Resources:
                 {
                     "Effect": "Allow",
                     "Action": "logs:CreateLogGroup",
-                    "Resource": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+                    "Resource": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:*"
                 },
                 {
                     "Effect": "Allow",
@@ -151,7 +151,7 @@ Resources:
                         "logs:PutLogEvents"
                     ],
                     "Resource": [
-                        "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaEnqueueFunctionName}:*"
+                        "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaEnqueueFunctionName}:*"
                     ]
                 }
             ]
@@ -168,7 +168,7 @@ Resources:
                 {
                     "Effect": "Allow",
                     "Action": "logs:CreateLogGroup",
-                    "Resource": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+                    "Resource": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:*"
                 },
                 {
                     "Effect": "Allow",
@@ -177,7 +177,7 @@ Resources:
                         "logs:PutLogEvents"
                     ],
                     "Resource": [
-                        "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaGenerateSitemapFunctionName}:*"
+                        "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaGenerateSitemapFunctionName}:*"
                     ]
                 }
             ]
@@ -194,7 +194,7 @@ Resources:
                 {
                     "Effect": "Allow",
                     "Action": "logs:CreateLogGroup",
-                    "Resource": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+                    "Resource": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:*"
                 },
                 {
                     "Effect": "Allow",
@@ -203,7 +203,7 @@ Resources:
                         "logs:PutLogEvents"
                     ],
                     "Resource": [
-                        "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaReportFunctionName}:*"
+                        "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaReportFunctionName}:*"
                     ]
                 }
             ]
@@ -217,7 +217,7 @@ Resources:
       MaxSessionDuration: 3600
       ManagedPolicyArns:
         - !Ref IAMEnqueueManagedPolicy
-        - "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/AmazonSQSFullAccess"
 
   IAMGenerateSitemapRole:
     Type: "AWS::IAM::Role"
@@ -227,8 +227,8 @@ Resources:
       MaxSessionDuration: 3600
       ManagedPolicyArns:
         - !Ref IAMGenerateSitemapManagedPolicy
-        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-        - "arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess"
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/AmazonS3FullAccess"
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/AmazonDynamoDBReadOnlyAccess"
 
   IAMReportRole:
     Type: "AWS::IAM::Role"
@@ -238,9 +238,9 @@ Resources:
       MaxSessionDuration: 3600
       ManagedPolicyArns:
         - !Ref IAMReportManagedPolicy
-        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-        - "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
-        - "arn:aws:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/AmazonS3FullAccess"
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/AmazonDynamoDBFullAccess"
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaSQSQueueExecutionRole"
 
   LambdaReportEventSourceMapping:
     Type: "AWS::Lambda::EventSourceMapping"
@@ -338,9 +338,9 @@ Resources:
           - Sid: "1"
             Effect: "Allow"
             Principal:
-              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontDefaultCloudFrontOriginAccessIdentity}"
+              AWS: !Sub "arn:${AWS::Partition}:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontDefaultCloudFrontOriginAccessIdentity}"
             Action: "s3:GetObject"
-            Resource: !Sub "arn:aws:s3:::${S3DefaultBucketName}/*"
+            Resource: !Sub "arn:${AWS::Partition}:s3:::${S3DefaultBucketName}/*"
 
   S3ReportsBucketPolicy:
     Type: "AWS::S3::BucketPolicy"
@@ -353,9 +353,9 @@ Resources:
           - Sid: "1"
             Effect: "Allow"
             Principal:
-              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontReportsCloudFrontOriginAccessIdentity}"
+              AWS: !Sub "arn:${AWS::Partition}:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontReportsCloudFrontOriginAccessIdentity}"
             Action: "s3:GetObject"
-            Resource: !Sub "arn:aws:s3:::${S3ReportsBucket}/*"
+            Resource: !Sub "arn:${AWS::Partition}:s3:::${S3ReportsBucket}/*"
 
   SQSQueue:
     Type: "AWS::SQS::Queue"
