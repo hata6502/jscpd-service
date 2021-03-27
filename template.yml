@@ -1,10 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
 Parameters:
-  CloudFrontDistributionAcmCertificateArn:
-    Type: String
-  CloudFrontDistributionAlias:
-    Type: String
   DynamoDBRepositoriesTableName:
     Type: String
   LambdaEnqueueFunctionName:
@@ -45,8 +41,6 @@ Resources:
     Type: "AWS::CloudFront::Distribution"
     Properties:
       DistributionConfig:
-        Aliases:
-          - !Ref CloudFrontDistributionAlias
         Origins:
           - ConnectionAttempts: 3
             ConnectionTimeout: 10
@@ -86,10 +80,6 @@ Resources:
             ViewerProtocolPolicy: "redirect-to-https"
         PriceClass: "PriceClass_All"
         Enabled: true
-        ViewerCertificate:
-          AcmCertificateArn: !Ref CloudFrontDistributionAcmCertificateArn
-          MinimumProtocolVersion: "TLSv1.2_2019"
-          SslSupportMethod: "sni-only"
         Restrictions:
           GeoRestriction:
             RestrictionType: "none"
