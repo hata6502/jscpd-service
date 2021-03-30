@@ -69,6 +69,16 @@ const lambdaHandler = async ({
     const name = `github/${gitHubRepositoryFullName}`;
     const revision = await git.revparse(["HEAD"]);
 
+    const jscpdReportJSONLocalPath = `${jscpdReportLocalPath}/jscpd-report.json`;
+    const report = JSON.parse(
+      fs.readFileSync(jscpdReportJSONLocalPath, "utf-8")
+    );
+    report.statistics.revision = revision;
+    fs.writeFileSync(
+      jscpdReportJSONLocalPath,
+      JSON.stringify(report, null, "\t")
+    );
+
     if (!process.env["AWS_DYNAMODB_REPOSITORIES_TABLE_NAME"]) {
       throw new Error();
     }
