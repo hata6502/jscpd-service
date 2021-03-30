@@ -69,10 +69,13 @@ const lambdaHandler = async ({
     const name = `github/${gitHubRepositoryFullName}`;
     const revision = await git.revparse(["HEAD"]);
 
-    let report = require(`${jscpdReportLocalPath}/jscpd-report.json`);
+    const jscpdReportJSONLocalPath = `${jscpdReportLocalPath}/jscpd-report.json`;
+    const report = JSON.parse(
+      fs.readFileSync(jscpdReportJSONLocalPath, "utf-8")
+    );
     report.statistics.revision = revision;
     fs.writeFileSync(
-      `${jscpdReportLocalPath}/jscpd-report.json`,
+      jscpdReportJSONLocalPath,
       JSON.stringify(report, null, "\t")
     );
 
