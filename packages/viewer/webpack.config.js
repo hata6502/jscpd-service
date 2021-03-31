@@ -36,7 +36,7 @@ module.exports = {
   },
   plugins: [
     new CopyPlugin({
-      patterns: [{ from: "resources", to: "dist" }],
+      patterns: [{ from: "resources" }],
     }),
   ],
   resolve: {
