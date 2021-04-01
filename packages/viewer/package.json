@@ -32,7 +32,6 @@
     "react-helmet": "^6.1.0",
     "react-syntax-highlighter": "^15.4.3",
     "regenerator-runtime": "^0.13.5",
-    "styled-components": "^5.2.1",
     "webpack": "^5.27.2",
     "webpack-cli": "^4.5.0",
     "webpack-dev-server": "^3.11.2"
