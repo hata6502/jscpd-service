@@ -1,102 +1,106 @@
-import {
-  ArgumentAxis,
-  ValueAxis,
-  Chart,
-  LineSeries,
-} from "@devexpress/dx-react-chart-material-ui";
 import AppBar from "@material-ui/core/AppBar";
 import Box from "@material-ui/core/Box";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
+import Link from "@material-ui/core/Link";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import GitHubIcon from "@material-ui/icons/GitHub";
+import Alert from "@material-ui/lab/Alert";
+import { useEffect, useState } from "react";
 import type { FunctionComponent } from "react";
+import type { Report } from "crawler";
+import { ReportContent } from "./ReportContent";
 
 const App: FunctionComponent = () => {
-  const data = [
-    { argument: 1, value: 10 },
-    { argument: 2, value: 20 },
-    { argument: 3, value: 30 },
-  ];
+  const [errorMessage, setErrorMessage] = useState<string>();
+  const [isLoading, setIsLoading] = useState(true);
+  const [report, setReport] = useState<Report>();
+
+  const gitHubMatches = window.location.pathname.match(
+    /\/github\/([-\w]+\/[-.\w]+)/
+  );
+
+  if (!gitHubMatches) {
+    throw new Error();
+  }
+
+  const gitHubRepositoryFullName = gitHubMatches[1];
+
+  useEffect(() => {
+    let isMounted = true;
+
+    (async () => {
+      try {
+        const response = await fetch(
+          `/reports/github/${gitHubRepositoryFullName}/jscpd-report.json`
+        );
+
+        if (!response.ok) {
+          throw new Error();
+        }
+
+        const report: Report = await response.json();
+
+        if (isMounted) {
+          setReport(report);
+        }
+      } catch {
+        if (isMounted) {
+          setErrorMessage("Couldn't load the jscpd report.");
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <>
       <Box mb={4}>
         <AppBar color="inherit" position="static">
           <Toolbar>
-            <Grid container spacing={2} alignItems="baseline">
-              <Grid item>
-                <Typography variant="h6">jscpd</Typography>
-              </Grid>
+            <Link color="inherit" href="/sitemap.html">
+              <Grid container spacing={2} alignItems="baseline">
+                <Grid item>
+                  <Typography variant="h6">jscpd</Typography>
+                </Grid>
 
-              <Grid item>
-                <Typography variant="subtitle1">Copy/Paste Detector</Typography>
+                <Grid item>
+                  <Typography variant="subtitle1">
+                    Copy/Paste Detector
+                  </Typography>
+                </Grid>
               </Grid>
-            </Grid>
+            </Link>
           </Toolbar>
         </AppBar>
       </Box>
 
-      <Box mb={4}>
-        <main>
-          <Container>
-            <Box mb={4}>
-              <Grid container spacing={4} alignItems="baseline">
-                <Grid item>
-                  <Typography variant="h4">
-                    <GitHubIcon fontSize="inherit" />
-                    &nbsp;user/repository
-                  </Typography>
-                </Grid>
+      <main>
+        <Container maxWidth="md">
+          {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
 
-                <Grid item>
-                  <Typography variant="h6">#revision</Typography>
-                </Grid>
-
-                <Grid item>
-                  <Typography variant="h6">YYYY/MM/DD</Typography>
-                </Grid>
-              </Grid>
+          {isLoading && (
+            <Box textAlign="center">
+              <CircularProgress />
             </Box>
+          )}
 
-            <Box mb={4}>
-              <Chart data={data}>
-                <ArgumentAxis />
-                <ValueAxis />
-
-                <LineSeries valueField="value" argumentField="argument" />
-              </Chart>
-            </Box>
-
-            <Box mb={4}>
-              <Paper>
-                <Box pb={2} pt={2}>
-                  <Container>
-                    <Typography gutterBottom variant="h5">
-                      Statistics
-                    </Typography>
-                    TEST
-                  </Container>
-                </Box>
-              </Paper>
-            </Box>
-
-            <Typography gutterBottom variant="h5">
-              Duplicates
-            </Typography>
-          </Container>
-        </main>
-      </Box>
-
-      <footer>
-        <Container>
-          <Typography gutterBottom variant="body2">
-            Powered by jscpd-service.
-          </Typography>
+          {report && (
+            <ReportContent
+              gitHubRepositoryFullName={gitHubRepositoryFullName}
+              report={report}
+            />
+          )}
         </Container>
-      </footer>
+      </main>
     </>
   );
 };

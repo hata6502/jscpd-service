@@ -1,5 +1,5 @@
 import "core-js";
-import "regenerator-runtime/runtime";
+import "regenerator-runtime";
 
 import CssBaseline from "@material-ui/core/CssBaseline";
 import {

@@ -23,7 +23,7 @@ const lambdaHandler = async () => {
     page.Items.forEach((item) => repositories.push(item));
   }
 
-  const indexHTMLBody = `
+  const sitemapHTMLBody = `
     <!DOCTYPE html>
     <html>
       <head>
@@ -48,24 +48,20 @@ const lambdaHandler = async () => {
                 throw new Error();
               }
 
-              const gitHubRegExpMatchArray = repository["name"].S.match(
+              const gitHubRegExpMatches = repository["name"].S.match(
                 /^github\/(.*)/
               );
 
-              if (!gitHubRegExpMatchArray) {
+              if (!gitHubRegExpMatches) {
                 throw new Error();
               }
 
-              const gitHubRepositoryName = gitHubRegExpMatchArray[1];
+              const gitHubRepositoryName = gitHubRegExpMatches[1];
 
               return `
                 <li>
-                  <a href="/reports/${repository["name"].S}/index.html">
+                  <a href="/${repository["name"].S}">
                     ${gitHubRepositoryName}#${repository["revision"].S}
-                  </a>
-                  &nbsp;
-                  <a href="https://github.com/${gitHubRepositoryName}" rel="noopener" target="_blank">
-                    GitHub
                   </a>
                 </li>
               `;
@@ -83,8 +79,8 @@ const lambdaHandler = async () => {
   await s3
     .upload({
       Bucket: process.env["AWS_S3_DEFAULT_BUCKET_NAME"],
-      Key: "index.html",
-      Body: indexHTMLBody,
+      Key: "sitemap.html",
+      Body: sitemapHTMLBody,
       ContentType: "text/html",
     })
     .promise();

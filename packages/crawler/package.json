@@ -2,6 +2,7 @@
   "name": "crawler",
   "version": "1.0.0",
   "private": true,
+  "main": "src/index.ts",
   "scripts": {
     "invoke:enqueue": "curl -XPOST 'http://localhost:9000/2015-03-31/functions/function/invocations'",
     "invoke:generate-sitemap": "curl -XPOST 'http://localhost:9001/2015-03-31/functions/function/invocations'",
@@ -10,6 +11,7 @@
   },
   "dependencies": {
     "@aws/dynamodb-query-iterator": "^0.7.1",
+    "@jscpd/core": "^3.3.17",
     "@octokit/rest": "^18.3.0",
     "aws-cli-js": "^2.1.0",
     "aws-sdk": "^2.853.0",

@@ -63,6 +63,7 @@ jobs:
           name: ${{secrets.AWS_CLOUD_FORMATION_STACK_NAME}}
           template: template.yml
           capabilities: CAPABILITY_IAM
+          no-fail-on-empty-changeset: "1"
           parameter-overrides: >-
             DynamoDBRepositoriesTableName=${{secrets.AWS_DYNAMODB_REPOSITORIES_TABLE_NAME}},
 
@@ -80,3 +81,13 @@ jobs:
 
             SQSQueueName=${{secrets.AWS_SQS_QUEUE_NAME}},
             SQSDeadLettersQueueName=${{secrets.AWS_SQS_DEAD_LETTERS_QUEUE_NAME}}
+
+      - run: npx --workspace=viewer webpack --env SENTRY_DSN=${{secrets.SENTRY_DSN}}
+      - uses: jakejarvis/s3-sync-action@master
+        env:
+          AWS_S3_BUCKET: ${{secrets.AWS_S3_DEFAULT_BUCKET_NAME}}
+          AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          SOURCE_DIR: packages/viewer/dist
+        with:
+          args: --acl public-read --follow-symlinks

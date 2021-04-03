@@ -56,6 +56,10 @@ Resources:
               OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontReportsCloudFrontOriginAccessIdentity}"
         OriginGroups:
           Quantity: 0
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
         DefaultCacheBehavior:
           AllowedMethods:
             - "HEAD"
@@ -84,7 +88,6 @@ Resources:
           GeoRestriction:
             RestrictionType: "none"
         HttpVersion: "http2"
-        DefaultRootObject: "index.html"
         IPV6Enabled: true
 
   DynamoDBRepositoriesTable:

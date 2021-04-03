@@ -1,10 +1,12 @@
 const CopyPlugin = require("copy-webpack-plugin");
 const path = require("path");
+const { EnvironmentPlugin } = require("webpack");
 
 module.exports = {
   mode: "production",
   devServer: {
     contentBase: path.join(__dirname, "dist"),
+    historyApiFallback: true,
   },
   devtool: "eval-source-map",
   entry: "./src/index.tsx",
@@ -36,8 +38,9 @@ module.exports = {
   },
   plugins: [
     new CopyPlugin({
-      patterns: [{ from: "resources", to: "dist" }],
+      patterns: [{ from: "resources" }],
     }),
+    new EnvironmentPlugin(["SENTRY_DSN"]),
   ],
   resolve: {
     extensions: [".js", ".jsx", ".ts", ".tsx"],

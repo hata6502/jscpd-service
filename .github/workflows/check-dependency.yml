@@ -1,8 +1,8 @@
-name: Test
+name: Check dependency
 on:
   push:
 jobs:
-  test:
+  check-dependency:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -10,7 +10,4 @@ jobs:
         with:
           node-version: "14"
       - run: npm install -g npm@7
-      - run: npm ci
-
-      - run: npm test
-      - run: npm test --workspaces
+      - uses: hata6502/no-broken-dependency-action@v1

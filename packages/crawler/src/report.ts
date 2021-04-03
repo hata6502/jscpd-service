@@ -1,3 +1,4 @@
+import type { IStatistic } from "@jscpd/core";
 import * as AWSCLI from "aws-cli-js";
 import AWS from "aws-sdk";
 import fs from "fs";
@@ -6,6 +7,24 @@ import { jscpd } from "jscpd";
 import os from "os";
 import path from "path";
 import simpleGit from "simple-git";
+
+interface ReportDuplicatedFile {
+  name: string;
+  start: number;
+  end: number;
+}
+
+interface Report {
+  duplicates: {
+    format: string;
+    fragment: string;
+    firstFile: ReportDuplicatedFile;
+    secondFile: ReportDuplicatedFile;
+  }[];
+  statistics: IStatistic & {
+    revision: string;
+  };
+}
 
 const dynamoDB = new AWS.DynamoDB({ apiVersion: "2012-08-10" });
 
@@ -29,7 +48,7 @@ const lambdaHandler = async ({
     }: { gitHubRepositoryFullName: string } = JSON.parse(record.body);
 
     const leakedTemporaryPaths = [
-      ...glob.sync(path.join(os.tmpdir(), "jscpd-report-*")),
+      ...glob.sync(path.join(os.tmpdir(), "report-*")),
       ...glob.sync(path.join(os.tmpdir(), "repository-*")),
     ];
 
@@ -39,9 +58,7 @@ const lambdaHandler = async ({
       )
     );
 
-    const jscpdReportLocalPath = fs.mkdtempSync(
-      path.join(os.tmpdir(), "jscpd-report-")
-    );
+    const reportLocalPath = fs.mkdtempSync(path.join(os.tmpdir(), "report-"));
 
     const repositoryLocalPath = fs.mkdtempSync(
       path.join(os.tmpdir(), "repository-")
@@ -60,24 +77,30 @@ const lambdaHandler = async ({
       "",
       repositoryLocalPath,
       "--output",
-      jscpdReportLocalPath,
+      reportLocalPath,
       "--reporters",
       "json",
       "--silent",
     ]);
 
-    const name = `github/${gitHubRepositoryFullName}`;
+    const reportJSONLocalPath = `${reportLocalPath}/jscpd-report.json`;
     const revision = await git.revparse(["HEAD"]);
 
-    const jscpdReportJSONLocalPath = `${jscpdReportLocalPath}/jscpd-report.json`;
-    const report = JSON.parse(
-      fs.readFileSync(jscpdReportJSONLocalPath, "utf-8")
+    const originalReport = JSON.parse(
+      fs.readFileSync(reportJSONLocalPath, "utf-8")
     );
-    report.statistics.revision = revision;
-    fs.writeFileSync(
-      jscpdReportJSONLocalPath,
-      JSON.stringify(report, null, "\t")
-    );
+
+    const report: Report = {
+      ...originalReport,
+      statistics: {
+        ...originalReport.statistics,
+        revision,
+      },
+    };
+
+    fs.writeFileSync(reportJSONLocalPath, JSON.stringify(report));
+
+    const name = `github/${gitHubRepositoryFullName}`;
 
     if (!process.env["AWS_DYNAMODB_REPOSITORIES_TABLE_NAME"]) {
       throw new Error();
@@ -85,7 +108,7 @@ const lambdaHandler = async ({
 
     await Promise.all([
       awsCLI.command(
-        `s3 sync ${jscpdReportLocalPath} s3://${process.env["AWS_S3_REPORT_BUCKET_NAME"]}/reports/${name} --delete`
+        `s3 sync ${reportLocalPath} s3://${process.env["AWS_S3_REPORT_BUCKET_NAME"]}/reports/${name} --delete`
       ),
       dynamoDB
         .putItem({
@@ -101,3 +124,4 @@ const lambdaHandler = async ({
 };
 
 export { lambdaHandler };
+export type { Report, ReportDuplicatedFile };
