@@ -92,8 +92,8 @@ Resources:
 
   DynamoDBRepositoriesTable:
     Type: "AWS::DynamoDB::Table"
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       AttributeDefinitions:
         - AttributeName: "name"
@@ -352,8 +352,8 @@ Resources:
 
   SQSQueue:
     Type: "AWS::SQS::Queue"
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       QueueName: !Ref SQSQueueName
       RedrivePolicy: !Sub '{"deadLetterTargetArn":"${SQSDeadLettersQueue.Arn}","maxReceiveCount":1}'
@@ -361,7 +361,7 @@ Resources:
 
   SQSDeadLettersQueue:
     Type: "AWS::SQS::Queue"
-    DeletionPolicy: Retain
-    UpdateReplacePolicy: Retain
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Properties:
       QueueName: !Ref SQSDeadLettersQueueName
