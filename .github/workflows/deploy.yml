@@ -82,7 +82,9 @@ jobs:
             SQSQueueName=${{secrets.AWS_SQS_QUEUE_NAME}},
             SQSDeadLettersQueueName=${{secrets.AWS_SQS_DEAD_LETTERS_QUEUE_NAME}}
 
-      - run: npx --workspace=viewer webpack --env SENTRY_DSN=${{secrets.SENTRY_DSN}}
+      - run: npx --workspace=viewer webpack
+        env:
+          SENTRY_DSN: ${{secrets.SENTRY_DSN}}
       - uses: jakejarvis/s3-sync-action@master
         env:
           AWS_S3_BUCKET: ${{secrets.AWS_S3_DEFAULT_BUCKET_NAME}}
