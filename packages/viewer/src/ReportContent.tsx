@@ -146,40 +146,47 @@ const ReportContent: FunctionComponent<{
         </TableContainer>
       </Box>
 
-      <Typography variant="h5" gutterBottom>
-        Duplicates
-      </Typography>
+      {report.duplicates.length !== 0 && (
+        <>
+          <Typography variant="h5" gutterBottom>
+            Duplicates
+          </Typography>
 
-      {report.duplicates.map((duplicate, index) => (
-        <Box key={index} mb={4}>
-          <Paper>
-            <Box pt={2}>
-              <Container>
-                <div>
-                  <GitHubCommitLink
-                    file={duplicate.firstFile}
-                    repositoryFullName={gitHubRepositoryFullName}
-                    revision={report.statistics.revision}
-                  />
-                </div>
-                <div>
-                  <GitHubCommitLink
-                    file={duplicate.secondFile}
-                    repositoryFullName={gitHubRepositoryFullName}
-                    revision={report.statistics.revision}
-                  />
-                </div>
-              </Container>
+          {report.duplicates.map((duplicate, index) => (
+            <Box key={index} mb={4}>
+              <Paper>
+                <Box pt={2}>
+                  <Container>
+                    <div>
+                      <GitHubCommitLink
+                        file={duplicate.firstFile}
+                        repositoryFullName={gitHubRepositoryFullName}
+                        revision={report.statistics.revision}
+                      />
+                    </div>
+                    <div>
+                      <GitHubCommitLink
+                        file={duplicate.secondFile}
+                        repositoryFullName={gitHubRepositoryFullName}
+                        revision={report.statistics.revision}
+                      />
+                    </div>
+                  </Container>
 
-              <Box fontSize="1.25rem">
-                <SyntaxHighlighter language={duplicate.format} style={vs2015}>
-                  {duplicate.fragment}
-                </SyntaxHighlighter>
-              </Box>
+                  <Box fontSize="1.25rem">
+                    <SyntaxHighlighter
+                      language={duplicate.format}
+                      style={vs2015}
+                    >
+                      {duplicate.fragment}
+                    </SyntaxHighlighter>
+                  </Box>
+                </Box>
+              </Paper>
             </Box>
-          </Paper>
-        </Box>
-      ))}
+          ))}
+        </>
+      )}
     </>
   );
 };
