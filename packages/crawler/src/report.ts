@@ -46,9 +46,7 @@ const lambdaHandler = async ({
       )
     );
 
-    const reportLocalPath = fs.mkdtempSync(
-      path.join(os.tmpdir(), "report-")
-    );
+    const reportLocalPath = fs.mkdtempSync(path.join(os.tmpdir(), "report-"));
 
     const repositoryLocalPath = fs.mkdtempSync(
       path.join(os.tmpdir(), "repository-")
@@ -88,10 +86,7 @@ const lambdaHandler = async ({
       },
     };
 
-    fs.writeFileSync(
-      reportJSONLocalPath,
-      JSON.stringify(report)
-    );
+    fs.writeFileSync(reportJSONLocalPath, JSON.stringify(report));
 
     const name = `github/${gitHubRepositoryFullName}`;
 

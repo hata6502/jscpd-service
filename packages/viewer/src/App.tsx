@@ -16,14 +16,23 @@ const App: FunctionComponent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [report, setReport] = useState<Report>();
 
+  const gitHubMatches = window.location.pathname.match(
+    /\/github\/([-\w]+\/[-.\w]+)/
+  );
+
+  if (!gitHubMatches) {
+    throw new Error();
+  }
+
+  const gitHubRepositoryFullName = gitHubMatches[1];
+
   useEffect(() => {
     let isMounted = true;
 
     (async () => {
       try {
         const response = await fetch(
-          // TODO: remove test file
-          "jscpd-report.json"
+          `/reports/github/${gitHubRepositoryFullName}/jscpd-report.json`
         );
 
         if (!response.ok) {
@@ -79,7 +88,12 @@ const App: FunctionComponent = () => {
             </Box>
           )}
 
-          {report && <ReportContent report={report} />}
+          {report && (
+            <ReportContent
+              gitHubRepositoryFullName={gitHubRepositoryFullName}
+              report={report}
+            />
+          )}
         </Container>
       </main>
     </>

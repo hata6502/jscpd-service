@@ -6,7 +6,9 @@ import {
 } from "@devexpress/dx-react-chart-material-ui";
 import { Animation, EventTracker, Palette } from "@devexpress/dx-react-chart";
 import Box from "@material-ui/core/Box";
+import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
+import Link from "@material-ui/core/Link";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -21,10 +23,12 @@ import type { FunctionComponent } from "react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { vs2015 } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import type { Report } from "crawler";
+import { GitHubCommitLink } from "./GitHubCommitLink";
 
 const ReportContent: FunctionComponent<{
+  gitHubRepositoryFullName: string;
   report: Report;
-}> = ({ report }) => {
+}> = ({ gitHubRepositoryFullName, report }) => {
   const chartData = [
     {
       type: "Unduplicated lines",
@@ -53,16 +57,20 @@ const ReportContent: FunctionComponent<{
         <Grid container spacing={4} alignItems="baseline">
           <Grid item>
             <Typography variant="h4">
-              {/*Todo: Link */}
               <GitHubIcon fontSize="inherit" />
-              &nbsp;user/repository
+              &nbsp;{gitHubRepositoryFullName}
             </Typography>
           </Grid>
 
           <Grid item>
-            {/*Todo: Link */}
             <Typography variant="h6">
-              #{report.statistics.revision.slice(0, 7)}
+              <Link
+                href={`https://github.com/${gitHubRepositoryFullName}/tree/${report.statistics.revision}`}
+                rel="noopener"
+                target="_blank"
+              >
+                #{report.statistics.revision.slice(0, 7)}
+              </Link>
             </Typography>
           </Grid>
 
@@ -73,7 +81,14 @@ const ReportContent: FunctionComponent<{
       </Box>
 
       <Box mb={4}>
-                      {/*Todo: Percent */}
+        <Typography variant="h5" align="center" gutterBottom>
+          Score
+        </Typography>
+
+        <Typography variant="h2" align="center" gutterBottom>
+          {Math.round(100 - report.statistics.total.percentage)}
+        </Typography>
+
         <Chart data={chartData}>
           <Animation />
           <EventTracker />
@@ -88,7 +103,7 @@ const ReportContent: FunctionComponent<{
       </Box>
 
       <Box mb={4}>
-        <Typography gutterBottom variant="h5">
+        <Typography variant="h5" gutterBottom>
           Statistics
         </Typography>
 
@@ -131,19 +146,40 @@ const ReportContent: FunctionComponent<{
         </TableContainer>
       </Box>
 
-      <Typography gutterBottom variant="h5">
+      <Typography variant="h5" gutterBottom>
         Duplicates
       </Typography>
 
-      <Box mb={4}>
-        <Paper>
-          <Typography variant="body1">
-            <SyntaxHighlighter language="javascript" style={vs2015}>
-              const a = 0;&lt;
-            </SyntaxHighlighter>
-          </Typography>
-        </Paper>
-      </Box>
+      {report.duplicates.map((duplicate, index) => (
+        <Box key={index} mb={4}>
+          <Paper>
+            <Box pt={2}>
+              <Container>
+                <div>
+                  <GitHubCommitLink
+                    file={duplicate.firstFile}
+                    repositoryFullName={gitHubRepositoryFullName}
+                    revision={report.statistics.revision}
+                  />
+                </div>
+                <div>
+                  <GitHubCommitLink
+                    file={duplicate.secondFile}
+                    repositoryFullName={gitHubRepositoryFullName}
+                    revision={report.statistics.revision}
+                  />
+                </div>
+              </Container>
+
+              <Box fontSize="1.25rem">
+                <SyntaxHighlighter language={duplicate.format} style={vs2015}>
+                  {duplicate.fragment}
+                </SyntaxHighlighter>
+              </Box>
+            </Box>
+          </Paper>
+        </Box>
+      ))}
     </>
   );
 };

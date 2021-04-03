@@ -5,6 +5,7 @@ module.exports = {
   mode: "production",
   devServer: {
     contentBase: path.join(__dirname, "dist"),
+    historyApiFallback: true,
   },
   devtool: "eval-source-map",
   entry: "./src/index.tsx",
