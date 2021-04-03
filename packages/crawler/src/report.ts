@@ -8,7 +8,19 @@ import os from "os";
 import path from "path";
 import simpleGit from "simple-git";
 
+interface ReportDuplicatedFile {
+  name: string;
+  start: number;
+  end: number;
+}
+
 interface Report {
+  duplicates: {
+    format: string;
+    fragment: string;
+    firstFile: ReportDuplicatedFile;
+    secondFile: ReportDuplicatedFile;
+  }[];
   statistics: IStatistic & {
     revision: string;
   };
@@ -112,4 +124,4 @@ const lambdaHandler = async ({
 };
 
 export { lambdaHandler };
-export type { Report };
+export type { Report, ReportDuplicatedFile };

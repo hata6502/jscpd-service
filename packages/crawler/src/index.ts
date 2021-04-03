@@ -1,1 +1,1 @@
-export type { Report } from "./report";
+export type { Report, ReportDuplicatedFile } from "./report";

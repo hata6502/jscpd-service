@@ -1,10 +1,9 @@
 import Link from "@material-ui/core/Link";
 import type { FunctionComponent } from "react";
-import type { Report } from "crawler";
+import type { Report, ReportDuplicatedFile } from "crawler";
 
 const GitHubCommitLink: FunctionComponent<{
-  // TODO
-  file: unknown;
+  file: ReportDuplicatedFile;
   repositoryFullName: string;
   revision: Report["statistics"]["revision"];
 }> = ({ file, repositoryFullName, revision }) => {
