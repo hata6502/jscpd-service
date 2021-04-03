@@ -23,7 +23,7 @@ const lambdaHandler = async () => {
     page.Items.forEach((item) => repositories.push(item));
   }
 
-  const indexHTMLBody = `
+  const sitemapHTMLBody = `
     <!DOCTYPE html>
     <html>
       <head>
@@ -79,8 +79,8 @@ const lambdaHandler = async () => {
   await s3
     .upload({
       Bucket: process.env["AWS_S3_DEFAULT_BUCKET_NAME"],
-      Key: "index.html",
-      Body: indexHTMLBody,
+      Key: "sitemap.html",
+      Body: sitemapHTMLBody,
       ContentType: "text/html",
     })
     .promise();

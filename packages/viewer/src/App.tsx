@@ -3,6 +3,7 @@ import Box from "@material-ui/core/Box";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
+import Link from "@material-ui/core/Link";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Alert from "@material-ui/lab/Alert";
@@ -65,15 +66,19 @@ const App: FunctionComponent = () => {
       <Box mb={4}>
         <AppBar color="inherit" position="static">
           <Toolbar>
-            <Grid container spacing={2} alignItems="baseline">
-              <Grid item>
-                <Typography variant="h6">jscpd</Typography>
-              </Grid>
+            <Link color="inherit" href="/sitemap.html">
+              <Grid container spacing={2} alignItems="baseline">
+                <Grid item>
+                  <Typography variant="h6">jscpd</Typography>
+                </Grid>
 
-              <Grid item>
-                <Typography variant="subtitle1">Copy/Paste Detector</Typography>
+                <Grid item>
+                  <Typography variant="subtitle1">
+                    Copy/Paste Detector
+                  </Typography>
+                </Grid>
               </Grid>
-            </Grid>
+            </Link>
           </Toolbar>
         </AppBar>
       </Box>

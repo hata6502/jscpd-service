@@ -1,5 +1,6 @@
 const CopyPlugin = require("copy-webpack-plugin");
 const path = require("path");
+const { EnvironmentPlugin } = require("webpack");
 
 module.exports = {
   mode: "production",
@@ -39,6 +40,7 @@ module.exports = {
     new CopyPlugin({
       patterns: [{ from: "resources" }],
     }),
+    new EnvironmentPlugin(["SENTRY_DSN"]),
   ],
   resolve: {
     extensions: [".js", ".jsx", ".ts", ".tsx"],

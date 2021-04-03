@@ -93,7 +93,7 @@ const lambdaHandler = async ({
     const report: Report = {
       ...originalReport,
       statistics: {
-        ...originalReport,
+        ...originalReport.statistics,
         revision,
       },
     };

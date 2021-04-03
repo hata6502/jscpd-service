@@ -3,7 +3,7 @@
 ## Development
 
 ```bash
-npm run dev
+dotenv -e ../../.env npm run dev
 ```
 
 Then access to the [development server](http://localhost:8080/github/sqlite/sqlite).
@@ -11,5 +11,5 @@ Then access to the [development server](http://localhost:8080/github/sqlite/sqli
 ## Build
 
 ```bash
-npx webpack
+dotenv -e ../../.env npx webpack
 ```
