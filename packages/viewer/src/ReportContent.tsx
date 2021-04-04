@@ -17,13 +17,19 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
-import { useTheme } from "@material-ui/core/styles";
+import { makeStyles, useTheme } from "@material-ui/core/styles";
 import GitHubIcon from "@material-ui/icons/GitHub";
 import type { FunctionComponent } from "react";
 import { PrismAsync } from "react-syntax-highlighter";
 import { prism } from "react-syntax-highlighter/dist/esm/styles/prism";
 import type { Report } from "crawler";
 import { GitHubCommitLink } from "./GitHubCommitLink";
+
+const useStyles = makeStyles({
+  fileContainer: {
+    wordBreak: "break-all",
+  },
+});
 
 const ReportContent: FunctionComponent<{
   gitHubRepositoryFullName: string;
@@ -40,6 +46,8 @@ const ReportContent: FunctionComponent<{
       count: report.statistics.total.duplicatedLines,
     },
   ];
+
+  const classes = useStyles();
 
   const detectionDate = new Date(report.statistics.detectionDate);
 
@@ -157,14 +165,15 @@ const ReportContent: FunctionComponent<{
               <Paper>
                 <Box pt={2}>
                   <Container>
-                    <div>
+                    <div className={classes.fileContainer}>
                       <GitHubCommitLink
                         file={duplicate.firstFile}
                         repositoryFullName={gitHubRepositoryFullName}
                         revision={report.statistics.revision}
                       />
                     </div>
-                    <div>
+
+                    <div className={classes.fileContainer}>
                       <GitHubCommitLink
                         file={duplicate.secondFile}
                         repositoryFullName={gitHubRepositoryFullName}
