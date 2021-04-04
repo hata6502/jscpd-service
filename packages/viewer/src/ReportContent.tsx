@@ -20,8 +20,8 @@ import Typography from "@material-ui/core/Typography";
 import { useTheme } from "@material-ui/core/styles";
 import GitHubIcon from "@material-ui/icons/GitHub";
 import type { FunctionComponent } from "react";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { vs2015 } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { PrismAsync } from "react-syntax-highlighter";
+import { prism } from "react-syntax-highlighter/dist/esm/styles/prism";
 import type { Report } from "crawler";
 import { GitHubCommitLink } from "./GitHubCommitLink";
 
@@ -173,14 +173,9 @@ const ReportContent: FunctionComponent<{
                     </div>
                   </Container>
 
-                  <Box fontSize="1.25rem">
-                    <SyntaxHighlighter
-                      language={duplicate.format}
-                      style={vs2015}
-                    >
-                      {duplicate.fragment}
-                    </SyntaxHighlighter>
-                  </Box>
+                  <PrismAsync language={duplicate.format} style={prism}>
+                    {duplicate.fragment}
+                  </PrismAsync>
                 </Box>
               </Paper>
             </Box>
