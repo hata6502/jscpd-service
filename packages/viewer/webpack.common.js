@@ -1,14 +1,7 @@
 const CopyPlugin = require("copy-webpack-plugin");
-const path = require("path");
 const { EnvironmentPlugin } = require("webpack");
 
 module.exports = {
-  mode: "production",
-  devServer: {
-    contentBase: path.join(__dirname, "dist"),
-    historyApiFallback: true,
-  },
-  devtool: "eval-source-map",
   entry: "./src/index.tsx",
   module: {
     rules: [
