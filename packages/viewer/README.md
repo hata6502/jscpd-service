@@ -11,5 +11,5 @@ Then access to the [development server](http://localhost:8080/github/sqlite/sqli
 ## Build
 
 ```bash
-dotenv -e ../../.env npx webpack
+dotenv -e ../../.env npm run build
 ```
