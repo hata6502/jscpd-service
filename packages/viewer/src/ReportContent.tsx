@@ -86,7 +86,7 @@ const ReportContent: FunctionComponent<{
         </Typography>
 
         <Typography variant="h2" align="center" gutterBottom>
-          {Math.round(100 - report.statistics.total.percentage)}
+          {Math.floor(100 - report.statistics.total.percentage)}
         </Typography>
 
         <Chart data={chartData}>
