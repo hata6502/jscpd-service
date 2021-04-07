@@ -3,6 +3,8 @@ AWSTemplateFormatVersion: "2010-09-09"
 Parameters:
   DynamoDBRepositoriesTableName:
     Type: String
+  HostName:
+    Type: String
   LambdaEnqueueFunctionName:
     Type: String
   LambdaEnqueueFunctionImageUri:
@@ -267,6 +269,7 @@ Resources:
         Variables:
           AWS_DYNAMODB_REPOSITORIES_TABLE_NAME: !Ref DynamoDBRepositoriesTableName
           AWS_S3_DEFAULT_BUCKET_NAME: !Ref S3DefaultBucketName
+          HOST_NAME: !Ref HostName
       FunctionName: !Ref LambdaGenerateSitemapFunctionName
       MemorySize: 256
       Role: !GetAtt IAMGenerateSitemapRole.Arn
