@@ -14,7 +14,12 @@ const App: FunctionComponent = () => (
     <Box mb={4}>
       <AppBar color="inherit" position="static">
         <Toolbar>
-          <Link color="inherit" href="/sitemap.html">
+          <Link
+            color="inherit"
+            href="https://github.com/hata6502/jscpd-service"
+            rel="noopener"
+            target="_blank"
+          >
             <Grid container spacing={2} alignItems="baseline">
               <Grid item>
                 <Typography variant="h6">jscpd</Typography>

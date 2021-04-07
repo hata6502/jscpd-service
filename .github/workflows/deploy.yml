@@ -67,6 +67,8 @@ jobs:
           parameter-overrides: >-
             DynamoDBRepositoriesTableName=${{secrets.AWS_DYNAMODB_REPOSITORIES_TABLE_NAME}},
 
+            HostName=${{secrets.HOST_NAME}},
+
             LambdaEnqueueFunctionName=${{secrets.AWS_LAMBDA_ENQUEUE_FUNCTION_NAME}},
             LambdaEnqueueFunctionImageUri=${{steps.get-lambda-enqueue-function-image-uri.outputs.image_uri}},
 

@@ -9,7 +9,7 @@
     "invoke:report": "curl -XPOST 'http://localhost:9002/2015-03-31/functions/function/invocations'",
     "test": "tsc --noEmit"
   },
-  "dependencies": {
+  "devDependencies": {
     "@aws/dynamodb-query-iterator": "^0.7.1",
     "@jscpd/core": "^3.3.17",
     "@octokit/rest": "^18.3.0",
@@ -17,9 +17,8 @@
     "aws-sdk": "^2.853.0",
     "glob": "^7.1.6",
     "jscpd": "^3.3.25",
-    "simple-git": "^2.35.2"
-  },
-  "devDependencies": {
+    "simple-git": "^2.35.2",
+    "sitemap": "^6.4.0",
     "ts-loader": "^8.0.18",
     "webpack": "^5.28.0",
     "webpack-cli": "^4.5.0"
