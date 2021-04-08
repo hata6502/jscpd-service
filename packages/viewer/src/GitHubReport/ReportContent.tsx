@@ -52,8 +52,6 @@ const ReportContent: FunctionComponent<{
     },
   ];
 
-  const classes = useStyles();
-
   const detectionDate = new Date(report.statistics.detectionDate);
 
   const formattedDetectionDate = [
@@ -66,6 +64,19 @@ const ReportContent: FunctionComponent<{
   const urlSearchParams = new URLSearchParams(location.search);
   const page = parseInt(urlSearchParams.get("page") || "1", 10);
 
+  const sortedDuplicates = [...report.duplicates].sort((a, b) => {
+    if (a.format < b.format) {
+      return -1;
+    }
+
+    if (a.format > b.format) {
+      return 1;
+    }
+
+    return 0;
+  });
+
+  const classes = useStyles();
   const theme = useTheme();
 
   return (
@@ -137,39 +148,57 @@ const ReportContent: FunctionComponent<{
 
             <TableBody>
               {Object.entries(report.statistics.formats).map(
-                ([format, statisticFormat]) => (
-                  <TableRow key={format}>
-                    <TableCell component="th" scope="row">
-                      {format}
-                    </TableCell>
+                ([format, statisticFormat]) => {
+                  const page =
+                    sortedDuplicates.findIndex(
+                      (duplicate) => duplicate.format === format
+                    ) + 1;
 
-                    <TableCell align="right">
-                      {Object.keys(statisticFormat.sources).length}
-                    </TableCell>
+                  return (
+                    <TableRow key={format}>
+                      <TableCell component="th" scope="row">
+                        {page === 0 ? (
+                          format
+                        ) : (
+                          <MUILink
+                            component={Link}
+                            to={`/github/${gitHubRepositoryFullName}${
+                              page === 1 ? "" : `?page=${page}`
+                            }`}
+                          >
+                            {format}
+                          </MUILink>
+                        )}
+                      </TableCell>
 
-                    <TableCell align="right">
-                      {statisticFormat.total.clones}
-                    </TableCell>
+                      <TableCell align="right">
+                        {Object.keys(statisticFormat.sources).length}
+                      </TableCell>
 
-                    <TableCell align="right">
-                      {statisticFormat.total.duplicatedLines} (
-                      {statisticFormat.total.percentage} %)
-                    </TableCell>
-                  </TableRow>
-                )
+                      <TableCell align="right">
+                        {statisticFormat.total.clones}
+                      </TableCell>
+
+                      <TableCell align="right">
+                        {statisticFormat.total.duplicatedLines} (
+                        {statisticFormat.total.percentage} %)
+                      </TableCell>
+                    </TableRow>
+                  );
+                }
               )}
             </TableBody>
           </Table>
         </TableContainer>
       </Box>
 
-      {report.duplicates.length !== 0 && (
+      {sortedDuplicates.length !== 0 && (
         <>
           <Typography variant="h5" gutterBottom>
             Duplicates
           </Typography>
 
-          {report.duplicates
+          {sortedDuplicates
             .slice((page - 1) * perPage, page * perPage)
             .map((duplicate, index) => (
               <Box key={index} mb={4}>
@@ -201,20 +230,24 @@ const ReportContent: FunctionComponent<{
               </Box>
             ))}
 
-          <Box mb={4} textAlign="center">
-            <Pagination
-              count={Math.ceil(report.duplicates.length / perPage)}
-              page={page}
-              renderItem={(item) => (
-                <PaginationItem
-                  {...item}
-                  component={Link}
-                  to={`/github/${gitHubRepositoryFullName}${
-                    item.page === 1 ? "" : `?page=${item.page}`
-                  }`}
+          <Box mb={4}>
+            <Grid container justify="center">
+              <Grid item>
+                <Pagination
+                  count={Math.ceil(sortedDuplicates.length / perPage)}
+                  page={page}
+                  renderItem={(item) => (
+                    <PaginationItem
+                      {...item}
+                      component={Link}
+                      to={`/github/${gitHubRepositoryFullName}${
+                        item.page === 1 ? "" : `?page=${item.page}`
+                      }`}
+                    />
+                  )}
                 />
-              )}
-            />
+              </Grid>
+            </Grid>
           </Box>
         </>
       )}
