@@ -4,6 +4,7 @@ import Container from "@material-ui/core/Container";
 import Alert from "@material-ui/lab/Alert";
 import { useEffect, useState } from "react";
 import type { FunctionComponent } from "react";
+import { Helmet } from "react-helmet";
 import { useParams } from "react-router-dom";
 import type { Report } from "crawler";
 import { ReportContent } from "./ReportContent";
@@ -53,6 +54,10 @@ const GitHubReport: FunctionComponent = () => {
 
   return (
     <Container maxWidth="md">
+      <Helmet>
+        <title>{repositoryFullName}</title>
+      </Helmet>
+
       {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
 
       {isLoading && (
