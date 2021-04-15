@@ -1,10 +1,3 @@
-import {
-  Chart,
-  Legend,
-  PieSeries,
-  Tooltip,
-} from "@devexpress/dx-react-chart-material-ui";
-import { Animation, EventTracker, Palette } from "@devexpress/dx-react-chart";
 import Box from "@material-ui/core/Box";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -25,6 +18,7 @@ import type { FunctionComponent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { PrismAsync } from "react-syntax-highlighter";
 import { prism } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from "recharts";
 import type { Report } from "crawler";
 import { GitHubCommitLink } from "./GitHubCommitLink";
 
@@ -42,13 +36,13 @@ const ReportContent: FunctionComponent<{
 }> = ({ gitHubRepositoryFullName, report }) => {
   const chartData = [
     {
-      type: "Unduplicated lines",
-      count:
+      name: "Original lines",
+      value:
         report.statistics.total.lines - report.statistics.total.duplicatedLines,
     },
     {
-      type: "Duplicated lines",
-      count: report.statistics.total.duplicatedLines,
+      name: "Duplicated lines",
+      value: report.statistics.total.duplicatedLines,
     },
   ];
 
@@ -117,17 +111,31 @@ const ReportContent: FunctionComponent<{
           {Math.floor(100 - report.statistics.total.percentage)}
         </Typography>
 
-        <Chart data={chartData}>
-          <Animation />
-          <EventTracker />
-          <Legend />
-          <Palette
-            scheme={[theme.palette.primary.main, theme.palette.secondary.main]}
-          />
-          <Tooltip />
+        <ResponsiveContainer height={400}>
+          <PieChart>
+            <Pie
+              data={chartData}
+              dataKey="value"
+              endAngle={90}
+              isAnimationActive={false}
+              label
+              startAngle={450}
+            >
+              {chartData.map((_entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={
+                    [theme.palette.primary.main, theme.palette.secondary.main][
+                      index
+                    ]
+                  }
+                />
+              ))}
+            </Pie>
 
-          <PieSeries valueField="count" argumentField="type" />
-        </Chart>
+            <Legend />
+          </PieChart>
+        </ResponsiveContainer>
       </Box>
 
       <Box mb={4}>
