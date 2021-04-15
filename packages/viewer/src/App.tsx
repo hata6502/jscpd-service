@@ -5,12 +5,15 @@ import Link from "@material-ui/core/Link";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import type { FunctionComponent } from "react";
+import { Helmet } from "react-helmet";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { GitHubReport } from "./GitHubReport";
 import { NotFound } from "./NotFound";
 
 const App: FunctionComponent = () => (
   <>
+    <Helmet defaultTitle="jscpd" titleTemplate="%s | jscpd" />
+
     <Box mb={4}>
       <AppBar color="inherit" position="static">
         <Toolbar>
