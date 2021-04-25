@@ -46,7 +46,7 @@ const lambdaHandler = async () => {
       "license:unlicense",
       "license:wtfpl",
       "size:<30000",
-      "stars:>=500",
+      "stars:>=250",
     ].join(" "),
     sort: "updated",
   });
