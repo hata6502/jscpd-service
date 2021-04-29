@@ -2,14 +2,14 @@ import Box from "@material-ui/core/Box";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Container from "@material-ui/core/Container";
 import Alert from "@material-ui/lab/Alert";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import type { FunctionComponent } from "react";
 import { Helmet } from "react-helmet";
 import { useParams } from "react-router-dom";
 import type { Report } from "crawler";
 import { ReportContent } from "./ReportContent";
 
-const GitHubReport: FunctionComponent = () => {
+const GitHubReport: FunctionComponent = memo(() => {
   const [errorMessage, setErrorMessage] = useState<string>();
   const [isLoading, setIsLoading] = useState(true);
   const [report, setReport] = useState<Report>();
@@ -74,6 +74,6 @@ const GitHubReport: FunctionComponent = () => {
       )}
     </Container>
   );
-};
+});
 
 export { GitHubReport };

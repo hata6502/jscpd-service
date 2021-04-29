@@ -1,4 +1,5 @@
 import Link from "@material-ui/core/Link";
+import { memo } from "react";
 import type { FunctionComponent } from "react";
 import type { Report, ReportDuplicatedFile } from "crawler";
 
@@ -6,7 +7,7 @@ const GitHubCommitLink: FunctionComponent<{
   file: ReportDuplicatedFile;
   repositoryFullName: string;
   revision: Report["statistics"]["revision"];
-}> = ({ file, repositoryFullName, revision }) => {
+}> = memo(({ file, repositoryFullName, revision }) => {
   const fileNameMatches = file.name.match(/repository-.{6}\/(.*)$/);
   const filePath = fileNameMatches?.[1] ?? file.name;
 
@@ -19,6 +20,6 @@ const GitHubCommitLink: FunctionComponent<{
       {filePath}&emsp;lines {file.start}-{file.end}
     </Link>
   );
-};
+});
 
 export { GitHubCommitLink };

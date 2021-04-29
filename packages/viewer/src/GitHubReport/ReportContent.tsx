@@ -14,6 +14,7 @@ import { makeStyles, useTheme } from "@material-ui/core/styles";
 import GitHubIcon from "@material-ui/icons/GitHub";
 import Pagination from "@material-ui/lab/Pagination";
 import PaginationItem from "@material-ui/lab/PaginationItem";
+import { memo } from "react";
 import type { FunctionComponent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { PrismAsync } from "react-syntax-highlighter";
@@ -33,7 +34,7 @@ const useStyles = makeStyles({
 const ReportContent: FunctionComponent<{
   gitHubRepositoryFullName: string;
   report: Report;
-}> = ({ gitHubRepositoryFullName, report }) => {
+}> = memo(({ gitHubRepositoryFullName, report }) => {
   const chartData = [
     {
       name: "Original lines",
@@ -261,6 +262,6 @@ const ReportContent: FunctionComponent<{
       )}
     </>
   );
-};
+});
 
 export { ReportContent };

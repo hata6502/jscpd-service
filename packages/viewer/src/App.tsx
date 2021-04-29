@@ -4,13 +4,14 @@ import Grid from "@material-ui/core/Grid";
 import Link from "@material-ui/core/Link";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
+import { memo } from "react";
 import type { FunctionComponent } from "react";
 import { Helmet } from "react-helmet";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { GitHubReport } from "./GitHubReport";
 import { NotFound } from "./NotFound";
 
-const App: FunctionComponent = () => (
+const App: FunctionComponent = memo(() => (
   <>
     <Helmet defaultTitle="jscpd" titleTemplate="%s | jscpd" />
 
@@ -51,6 +52,6 @@ const App: FunctionComponent = () => (
       </BrowserRouter>
     </main>
   </>
-);
+));
 
 export { App };
