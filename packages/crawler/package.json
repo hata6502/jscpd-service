@@ -12,7 +12,7 @@
   "devDependencies": {
     "@aws/dynamodb-query-iterator": "^0.7.1",
     "@jscpd/core": "^3.3.17",
-    "@octokit/rest": "^18.3.0",
+    "@octokit/rest": "^18.5.3",
     "aws-cli-js": "^2.1.0",
     "aws-sdk": "^2.853.0",
     "glob": "^7.1.6",
