@@ -1,6 +1,6 @@
 name: Check dependencies
 on:
-  push:
+  pull_request:
 jobs:
   check-dependencies:
     runs-on: ubuntu-20.04
@@ -10,10 +10,10 @@ jobs:
         with:
           node-version: "14"
       - run: npm install -g npm@7
-      - uses: hata6502/no-broken-dependency-action@v4
-      - uses: hata6502/no-broken-dependency-action@v4
+      - uses: hata6502/no-broken-dependency-action@v5
+      - uses: hata6502/no-broken-dependency-action@v5
         with:
           directory: packages/crawler/
-      - uses: hata6502/no-broken-dependency-action@v4
+      - uses: hata6502/no-broken-dependency-action@v5
         with:
           directory: packages/viewer/
