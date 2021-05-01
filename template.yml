@@ -273,7 +273,7 @@ Resources:
       FunctionName: !Ref LambdaGenerateSitemapFunctionName
       MemorySize: 256
       Role: !GetAtt IAMGenerateSitemapRole.Arn
-      Timeout: 3
+      Timeout: 30
       TracingConfig:
         Mode: "PassThrough"
       PackageType: Image
