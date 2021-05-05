@@ -19,7 +19,7 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@sentry/react": "^6.3.5",
-    "@sentry/tracing": "^6.2.3",
+    "@sentry/tracing": "^6.3.5",
     "@types/react-router-dom": "^5.1.7",
     "@types/react-syntax-highlighter": "^13.5.0",
     "babel-loader": "^8.2.2",
