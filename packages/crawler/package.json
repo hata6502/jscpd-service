@@ -17,7 +17,7 @@
     "aws-sdk": "^2.853.0",
     "glob": "^7.1.6",
     "jscpd": "^3.3.25",
-    "simple-git": "^2.35.2",
+    "simple-git": "^2.38.0",
     "sitemap": "^6.4.0",
     "ts-loader": "^8.0.18",
     "webpack": "^5.28.0",
