@@ -1,5 +1,11 @@
 # jscpd-service
 
+## Prepare global commands
+
+```bash
+npm install -g ancestor-file dotenv-cli
+```
+
 ## Set up environment variables
 
 ```bash
