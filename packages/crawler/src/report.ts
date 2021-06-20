@@ -43,9 +43,8 @@ const lambdaHandler = async ({
   }[];
 }) => {
   for (const record of Records) {
-    const {
-      gitHubRepositoryFullName,
-    }: { gitHubRepositoryFullName: string } = JSON.parse(record.body);
+    const { gitHubRepositoryFullName }: { gitHubRepositoryFullName: string } =
+      JSON.parse(record.body);
 
     const leakedTemporaryPaths = [
       ...glob.sync(path.join(os.tmpdir(), "report-*")),
