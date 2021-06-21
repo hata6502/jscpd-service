@@ -3,13 +3,13 @@
 ## Build AWS Lambda container images
 
 ```bash
-npx webpack && docker-compose --env-file `anc .env` build
+npx webpack && ancenv docker-compose build
 ```
 
 ## Launch AWS Lambdas
 
 ```bash
-docker-compose --env-file `anc .env` up
+ancenv docker-compose up
 ```
 
 ## Invoke AWS Lambda function

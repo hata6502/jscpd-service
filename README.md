@@ -1,10 +1,8 @@
 # jscpd-service
 
-## Prepare global commands
+## Requirements
 
-```bash
-npm install -g ancestor-file dotenv-cli
-```
+- [ancenv](https://scrapbox.io/hata6502/ancenv)
 
 ## Set up environment variables
 
