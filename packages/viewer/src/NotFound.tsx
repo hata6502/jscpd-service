@@ -1,3 +1,4 @@
+import Box from "@material-ui/core/Box";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import { memo } from "react";
@@ -13,8 +14,13 @@ const NotFound: FunctionComponent = memo(() => (
       <title>Not Found</title>
     </Helmet>
 
-    <Typography variant="h6">Not Found</Typography>
-    <AdSense.Google client="ca-pub-7008780049786244" slot="5063315418" />
+    <Box mb={4}>
+      <Typography variant="h6">Not Found</Typography>
+    </Box>
+
+    <Box mb={4}>
+      <AdSense.Google client="ca-pub-7008780049786244" slot="5063315418" />
+    </Box>
   </Container>
 ));
 

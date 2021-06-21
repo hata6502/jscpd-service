@@ -141,7 +141,9 @@ const ReportContent: FunctionComponent<{
         </ResponsiveContainer>
       </Box>
 
-      <AdSense.Google client="ca-pub-7008780049786244" slot="5063315418" />
+      <Box mb={4}>
+        <AdSense.Google client="ca-pub-7008780049786244" slot="5063315418" />
+      </Box>
 
       <Box mb={4}>
         <Typography variant="h5" gutterBottom>
@@ -265,7 +267,9 @@ const ReportContent: FunctionComponent<{
         </>
       )}
 
-      <AdSense.Google client="ca-pub-7008780049786244" slot="5063315418" />
+      <Box mb={4}>
+        <AdSense.Google client="ca-pub-7008780049786244" slot="5063315418" />
+      </Box>
     </>
   );
 });
