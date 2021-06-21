@@ -4,6 +4,8 @@ import Container from "@material-ui/core/Container";
 import Alert from "@material-ui/lab/Alert";
 import { memo, useEffect, useState } from "react";
 import type { FunctionComponent } from "react";
+// @ts-expect-error
+import AdSense from "react-adsense";
 import { Helmet } from "react-helmet";
 import { useParams } from "react-router-dom";
 import type { Report } from "crawler";
@@ -58,10 +60,27 @@ const GitHubReport: FunctionComponent = memo(() => {
         <title>{repositoryFullName}</title>
       </Helmet>
 
-      {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+      {errorMessage && (
+        <>
+          <Helmet>
+            <meta name="robots" content="nofollow, noindex" />
+          </Helmet>
+
+          <Box mb={4}>
+            <Alert severity="error">{errorMessage}</Alert>
+          </Box>
+
+          <Box mb={4}>
+            <AdSense.Google
+              client="ca-pub-7008780049786244"
+              slot="5063315418"
+            />
+          </Box>
+        </>
+      )}
 
       {isLoading && (
-        <Box textAlign="center">
+        <Box mb={4} textAlign="center">
           <CircularProgress />
         </Box>
       )}
