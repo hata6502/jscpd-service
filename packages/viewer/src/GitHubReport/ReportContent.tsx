@@ -16,6 +16,8 @@ import Pagination from "@material-ui/lab/Pagination";
 import PaginationItem from "@material-ui/lab/PaginationItem";
 import { memo } from "react";
 import type { FunctionComponent } from "react";
+// @ts-expect-error
+import AdSense from "react-adsense";
 import { Link, useLocation } from "react-router-dom";
 import { PrismAsync } from "react-syntax-highlighter";
 import { prism } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -139,6 +141,8 @@ const ReportContent: FunctionComponent<{
         </ResponsiveContainer>
       </Box>
 
+      <AdSense.Google client="ca-pub-7008780049786244" slot="5063315418" />
+
       <Box mb={4}>
         <Typography variant="h5" gutterBottom>
           Statistics
@@ -260,6 +264,8 @@ const ReportContent: FunctionComponent<{
           </Box>
         </>
       )}
+
+      <AdSense.Google client="ca-pub-7008780049786244" slot="5063315418" />
     </>
   );
 });
