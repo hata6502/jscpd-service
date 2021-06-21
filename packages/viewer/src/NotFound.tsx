@@ -7,6 +7,7 @@ import { Helmet } from "react-helmet";
 const NotFound: FunctionComponent = memo(() => (
   <Container>
     <Helmet>
+      <meta name="robots" content="nofollow, noindex" />
       <title>Not Found</title>
     </Helmet>
 
